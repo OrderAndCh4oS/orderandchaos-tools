@@ -1,0 +1,38 @@
+.wrapper {
+  padding: 40px;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.gridCell {
+  padding: 8px;
+}
+
+.title {
+  font-size: 12px;
+  margin: 0;
+  font-weight: bold;
+}
+
+.text {
+  font-size: 12px;
+  margin: 0;
+}
+
+.img {
+  min-width: 150px;
+  padding-top: 8px;
+  max-width: 150px;
+  height: auto;
+}
+
+.show {
+  opacity: 1;
+}
+
+.hide{
+  opacity: 0.5;
+}
