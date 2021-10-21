@@ -5,17 +5,22 @@ import {useEffect, useState} from 'react';
 import getObjktsByWallet from './api/get-objkts-by-wallet';
 import getIpfsUrl from './utilities/get-ipfs-url';
 import {Field, Form, Formik} from 'formik';
+import Footer from './components/footer';
 
 const App = () => {
     const {sync, unsync, auth} = useTezos();
     return (
         <div className={styles.wrapper}>
-            {!auth
+            <h1 className={styles.heading}>Batch Swapper</h1>
+            <p>{!auth
                 ? <button onClick={sync}>Sync</button>
                 : <button onClick={unsync}>Unsync</button>}
-            {auth ? <GetBalance/> : null}
-        </div>
+                {auth ? ' ' + auth.address : ' Sync Wallet to begin'}
 
+            </p>
+            {auth ? <GetBalance/> : null}
+            <Footer/>
+        </div>
     );
 };
 
@@ -76,49 +81,47 @@ const GetBalance = () => {
         });
     };
 
-    useEffect(() => {
-        console.log(swapObjkts);
-    }, [swapObjkts]);
-
     return (
         <div>
-            <Formik
-                initialValues={{xtz: defaultValues.xtz}}
-                onSubmit={handleOverrideSubmit}
-            >
-                <Form>
-                    <p className={styles.text}>
-                        <label htmlFor="xtz">xtz</label>
-                        <Field
-                            id="xtz"
-                            name="xtz"
-                            type="number"
-                            placeholder="10"
-                        />
-                        <button type="submit">Override</button>
-                    </p>
-                </Form>
-            </Formik>
-            <Formik
-                initialValues={{amount: defaultValues.amount}}
-                onSubmit={handleOverrideSubmit}
-            >
-                <Form>
-                    <p className={styles.text}>
-                        <label htmlFor="amount">amount</label>
-                        <Field
-                            id="amount"
-                            name="amount"
-                            type="number"
-                            min="1"
-                            max="10000"
-                            placeholder="1"
-                        />
-                        <button type="submit">Override</button>
-                    </p>
-                </Form>
-            </Formik>
-            <p className={styles.text}>
+            <div className={styles.overridesHolder}>
+                <Formik
+                    initialValues={{xtz: defaultValues.xtz}}
+                    onSubmit={handleOverrideSubmit}
+                >
+                    <Form>
+                        <p className={styles.field}>
+                            <label htmlFor="xtz">xtz</label>
+                            <Field
+                                id="xtz"
+                                name="xtz"
+                                type="number"
+                                placeholder="10"
+                            />
+                            <button type="submit">Override</button>
+                        </p>
+                    </Form>
+                </Formik>
+                <Formik
+                    initialValues={{amount: defaultValues.amount}}
+                    onSubmit={handleOverrideSubmit}
+                >
+                    <Form>
+                        <p className={styles.field}>
+                            <label htmlFor="amount">amount</label>
+                            <Field
+                                id="amount"
+                                name="amount"
+                                type="number"
+                                min="1"
+                                max="10000"
+                                placeholder="1"
+                            />
+                            <button type="submit">Override</button>
+                        </p>
+                    </Form>
+                </Formik>
+            </div>
+            <p className={styles.field}>
                 <button
                     onClick={handleBatchSwap}
                 >Swap
@@ -127,56 +130,65 @@ const GetBalance = () => {
             <div className={styles.grid}>
                 {objkts && objkts.map(objkt => (
                     <div key={objkt.id} className={styles.gridCell}>
-                        <div className={styles.objktInfo}>
-                            <h2 className={styles.title}>#{objkt.id} {objkt.title}</h2>
-                            <p className={styles.text}>{objkt.creator_id}</p>
-                            <p className={styles.text}>Royalties {objkt.royalties /
-                            10}%</p>
-                            <p className={styles.text}>Swappable {objkt.totalPossessed}</p>
-                            {objkt.tradeData && <p className={styles.text}>
-                                Min {objkt.tradeData.min}ꜩ
-                                Max {objkt.tradeData.max}ꜩ
-                                Avg {objkt.tradeData.average}ꜩ
-                                Last {objkt.tradeData.last}ꜩ
-                            </p>}
-                            {objkt.floor && <p className={styles.text}>Floor {objkt.floor}ꜩ</p>}
+                        <div className={styles.cell}>
+                            <img
+                                alt={objkt.title}
+                                loading="lazy"
+                                className={styles.img}
+                                src={getIpfsUrl(objkt.display_uri)}
+                            />
+                            <div className={styles.objktInfo}>
+                                <h2 className={styles.title}>#{objkt.id} {objkt.title}</h2>
+                                <p className={styles.text}>{objkt.creator_id}</p>
+                                <p className={styles.text}>Royalties {objkt.royalties /
+                                10}%</p>
+                                <p className={styles.text}>Swappable {objkt.totalPossessed}</p>
+                                {objkt.tradeData && <p className={styles.text}>
+                                    Min&nbsp;{objkt.tradeData.min}ꜩ
+                                    Max&nbsp;{objkt.tradeData.max}ꜩ
+                                    Avg&nbsp;{objkt.tradeData.average}ꜩ
+                                    Last&nbsp;{objkt.tradeData.last}ꜩ
+                                </p>}
+                                {objkt.floor &&
+                                <p className={styles.text}>Floor&nbsp;{objkt.floor}ꜩ</p>}
+                            </div>
+                            <p>
+                                <button
+                                    onClick={toggleObjkt(objkt)}
+                                    className={styles.selectButton}
+                                >{
+                                    objkt.id in
+                                    swapObjkts
+                                        ? 'Deselect'
+                                        : 'Select'
+                                }</button>
+                            </p>
+                            {objkt.id in swapObjkts && <div>
+                                <p>
+                                    <label htmlFor={`${objkt.id}Xtz`}>xtz</label>
+                                    <input
+                                        id={`${objkt.id}Xtz`}
+                                        type="number"
+                                        min={0.000001}
+                                        value={swapObjkts?.[objkt.id].xtz}
+                                        onChange={handleObjktChange('xtz',
+                                            objkt)}
+                                    />
+                                </p>
+                                <p>
+                                    <label htmlFor={`${objkt.id}Amount`}>Amount</label>
+                                    <input
+                                        id={`${objkt.id}Amount`}
+                                        type="number"
+                                        min={1}
+                                        max={10000}
+                                        value={swapObjkts?.[objkt.id].amount}
+                                        onChange={handleObjktChange('amount',
+                                            objkt)}
+                                    />
+                                </p>
+                            </div>}
                         </div>
-                        <img
-                            alt={objkt.title}
-                            loading="lazy"
-                            className={styles.img}
-                            src={getIpfsUrl(objkt.display_uri)}
-                        />
-                        <p>
-                            <button onClick={toggleObjkt(objkt)}>{objkt.id in
-                            swapObjkts
-                                ? 'Deselect'
-                                : 'Select'}</button>
-                        </p>
-                        {objkt.id in swapObjkts && <div>
-                            <p>
-                                <label htmlFor={`${objkt.id}Xtz`}>xtz</label>
-                                <input
-                                    id={`${objkt.id}Xtz`}
-                                    type="number"
-                                    min={0.000001}
-                                    value={swapObjkts?.[objkt.id].xtz}
-                                    onChange={handleObjktChange('xtz', objkt)}
-                                />
-                            </p>
-                            <p>
-                                <label htmlFor={`${objkt.id}Amount`}>Amount</label>
-                                <input
-                                    id={`${objkt.id}Amount`}
-                                    type="number"
-                                    min={1}
-                                    max={10000}
-                                    value={swapObjkts?.[objkt.id].amount}
-                                    onChange={handleObjktChange('amount',
-                                        objkt)}
-                                />
-                            </p>
-                        </div>}
                     </div>
                 ))}
             </div>

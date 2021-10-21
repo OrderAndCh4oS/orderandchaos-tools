@@ -1,7 +1,10 @@
 import {gql} from 'graphql-request';
 import gqlClient from '../gql/client';
 
-const ONE_MILLION = 1000000;
+export const priceToXtz = price => (price / 1000000)
+    .toFixed(3)
+    .replace(/0*$/, '')
+    .replace(/\.$/, '');
 
 const query = gql`
     query getObjktsByWallet($address: String!) {
@@ -67,16 +70,16 @@ const getTradeData = trades => {
     }
 
     return {
-        min: min / ONE_MILLION,
-        max: max / ONE_MILLION,
-        total: total / ONE_MILLION,
-        average: (total / count) / ONE_MILLION,
-        last: trades?.[0].swap.price / ONE_MILLION || 0,
+        min: priceToXtz(min),
+        max: priceToXtz(max),
+        total: priceToXtz(total),
+        average: priceToXtz(total / count),
+        last: priceToXtz(trades?.[0].swap.price) || 0,
         count,
     };
 };
 
-const getFloor = swaps => swaps.reduce((floor, s) => s.price < floor ? s.price : floor, Infinity) / ONE_MILLION;
+const getFloor = swaps => priceToXtz(swaps.reduce((floor, s) => s.price < floor ? s.price : floor, Infinity));
 
 const getObjktsByWallet = async(address) => {
     try {

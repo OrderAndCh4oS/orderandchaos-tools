@@ -1,0 +1,24 @@
+/*
+Font: 		Grafista
+Style: 		Regular
+URL: 		https://www.youworkforthem.com/font/T6794/grafista
+Foundry: 	Scannerlicker
+Foundry: 	https://www.youworkforthem.com/designer/717/scannerlicker
+Copyright:	Copyright (c) 2016 by Fábio Duarte Martins. All rights reserved.
+Version: 	17
+Created:	August 13, 2016
+License: 	https://www.youworkforthem.com/font-license 
+License: 	The WebFont(s) listed in this document must follow the YouWorkForThem
+			WebFont license rules. All other parties are strictly restricted 
+			from using the WebFonts(s) listed without a purchased license. 
+			All details above must always remain unaltered and visible in your CSS.
+*/
+
+@font-face {
+    font-family: 'Grafista-Regular';
+    src: url('grafista-regular.woff2') format('woff2'),
+    url('grafista-regular.woff') format('woff'),
+    url('grafista-regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}

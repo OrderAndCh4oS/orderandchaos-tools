@@ -1,14 +1,47 @@
 .wrapper {
+  box-sizing: border-box;
   padding: 40px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.heading {
+  font-size: 21px;
+  margin: 0 0 16px;
 }
 
 .grid {
   display: flex;
   flex-wrap: wrap;
+  margin: 0 -8px 80px;
 }
 
 .gridCell {
+  max-width: 250px;
   padding: 8px;
+}
+
+.cell {
+  box-sizing: border-box;
+  position: relative;
+  height: 100%;
+  padding: 8px 0 30px;
+  border-top: 1px solid hsl(227, 49%, 94%);
+  border-bottom: 1px solid hsl(227, 49%, 94%);
+}
+
+.selectButton {
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+}
+
+.overridesHolder {
+  margin-top: auto;
+  border-top: 1px solid hsl(227, 49%, 94%);
+  border-bottom: 1px solid hsl(227, 49%, 94%);
+  padding: 16px 0;
 }
 
 .title {
@@ -22,10 +55,15 @@
   margin: 0;
 }
 
+.field {
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
 .img {
-  min-width: 150px;
-  padding-top: 8px;
-  max-width: 150px;
+  width: 250px;
+  padding-bottom: 8px;
+  min-height: 250px;
   height: auto;
 }
 
