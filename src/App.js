@@ -19,13 +19,13 @@ const App = () => {
                 : <button onClick={unsync}>Unsync</button>}
                 {auth ? ' ' + auth.address : ' Sync Wallet to begin'}
             </p>
-            {auth ? <GetBalance/> : null}
+            {auth ? <BatchSwap/> : null}
             <Footer/>
         </div>
     );
 };
 
-const GetBalance = () => {
+const BatchSwap = () => {
     const {auth} = useTezos();
     const {batchSwap} = useTools();
     const [objkts, setObjkts] = useState();
