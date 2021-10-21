@@ -62,7 +62,6 @@ const getTradeData = trades => {
     let total = 0;
     let count = trades.length;
     trades = trades.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-    console.log('trades', trades)
     for(const trade of trades) {
         if(trade.swap.price < min) min = trade.swap.price;
         if(trade.swap.price > max) max = trade.swap.price;
