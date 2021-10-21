@@ -1,3 +1,4 @@
+/* eslint-disable no-sequences */
 import styles from './App.module.css';
 import useTezos from './hooks/use-tezos';
 import useTools from './hooks/use-tools';
