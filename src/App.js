@@ -12,11 +12,11 @@ const App = () => {
     return (
         <div className={styles.wrapper}>
             <h1 className={styles.heading}>Batch Swapper</h1>
+            <p className={styles.subText}>Experimental prototype, use at your own risk.</p>
             <p>{!auth
                 ? <button onClick={sync}>Sync</button>
                 : <button onClick={unsync}>Unsync</button>}
                 {auth ? ' ' + auth.address : ' Sync Wallet to begin'}
-
             </p>
             {auth ? <GetBalance/> : null}
             <Footer/>
