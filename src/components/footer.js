@@ -125,6 +125,9 @@ const Footer = () =>
             <br/>
             <a href="https://www.hicetnunc.xyz/tz/tz1iM7PB4brTmkbTUccsrXYjepSQ6ext7KYu">tz1iM...t7KYu</a>
         </p>
+        <p>
+            View on GitHub <a href='https://github.com/OrderAndCh4oS/hicetnunc-batch-swapper'>https://github.com/OrderAndCh4oS/hicetnunc-batch-swapper</a>
+        </p>
     </footer>
 
 export default Footer
