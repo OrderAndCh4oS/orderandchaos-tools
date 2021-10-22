@@ -164,7 +164,7 @@ const BatchSwap = () => {
                     </Formik>
                 </div>
                 <div className={styles.sortHolder}>
-                    <div>
+                    <div className={styles.marginBottom}>
                         <label htmlFor="sortOn">Sort On</label>
                         <select
                             onChange={handleSort}
