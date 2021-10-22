@@ -4,7 +4,7 @@ import {BeaconWallet} from '@taquito/beacon-wallet';
 
 const Tezos = new TezosToolkit('https://mainnet.smartpy.io');
 const wallet = new BeaconWallet({
-    name: 'oac-tezos-tools',
+    name: 'Order & Chaos Tools',
     preferredNetwork: 'mainnet'
 });
 // Todo: move network params to .env, use testnet for testing

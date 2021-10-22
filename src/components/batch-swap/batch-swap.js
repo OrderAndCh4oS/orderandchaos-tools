@@ -63,45 +63,96 @@ const BatchSwap = () => {
         });
     };
 
+    const handleSort = (event) => {
+        console.log(event.target.value);
+        switch(event.target.value) {
+            case 'id-asc':
+                setObjkts(prevState => ([...prevState.sort((a, b) => a.id - b.id)]))
+                break;
+            case 'id-desc':
+                setObjkts(prevState => ([...prevState.sort((a, b) => b.id - a.id)]));
+                break;
+            case 'floor-asc':
+                setObjkts(prevState => ([...prevState.sort((a, b) => a.floor - b.floor)]))
+                break;
+            case 'floor-desc':
+                setObjkts(prevState => ([...prevState.sort((a, b) => b.floor - a.floor)]));
+                break;
+            case 'last-asc':
+                setObjkts(prevState => ([...prevState.sort((a, b) => (a.tradeData?.last || -1) - (b.tradeData?.last || -1))]))
+                break;
+            case 'last-desc':
+                setObjkts(prevState => ([...prevState.sort((a, b) => (b.tradeData?.last || -1) - (a.tradeData?.last || -1))]))
+                break;
+            case 'avg-asc':
+                setObjkts(prevState => ([...prevState.sort((a, b) => (a.tradeData?.avg || -1) - (b.tradeData?.avg || -1))]))
+                break;
+            case 'avg-desc':
+                setObjkts(prevState => ([...prevState.sort((a, b) => (b.tradeData?.avg || -1) - (a.tradeData?.avg || -1))]))
+                break;
+            default:
+                console.log('Unhandled type')
+        }
+    };
+
+    useEffect(() => {
+        console.log(objkts?.[0]);
+    }, [objkts])
+
     return (
         <div>
-            <div className={styles.overridesHolder}>
-                <Formik
-                    initialValues={{xtz: defaultValues.xtz}}
-                    onSubmit={handleOverrideSubmit}
-                >
-                    <Form>
-                        <p className={styles.field}>
-                            <label htmlFor="xtz">xtz</label>
-                            <Field
-                                id="xtz"
-                                name="xtz"
-                                type="number"
-                                placeholder="10"
-                            />
-                            <button type="submit">Override</button>
-                        </p>
-                    </Form>
-                </Formik>
-                <Formik
-                    initialValues={{amount: defaultValues.amount}}
-                    onSubmit={handleOverrideSubmit}
-                >
-                    <Form>
-                        <p className={styles.field}>
-                            <label htmlFor="amount">amount</label>
-                            <Field
-                                id="amount"
-                                name="amount"
-                                type="number"
-                                min="1"
-                                max="10000"
-                                placeholder="1"
-                            />
-                            <button type="submit">Override</button>
-                        </p>
-                    </Form>
-                </Formik>
+            <div className={styles.formHolder}>
+                <div className={styles.overridesHolder}>
+                    <Formik
+                        initialValues={{xtz: defaultValues.xtz}}
+                        onSubmit={handleOverrideSubmit}
+                    >
+                        <Form>
+                            <p className={styles.field}>
+                                <label htmlFor="xtz">xtz</label>
+                                <Field
+                                    id="xtz"
+                                    name="xtz"
+                                    type="number"
+                                    placeholder="10"
+                                />
+                                <button type="submit">Override</button>
+                            </p>
+                        </Form>
+                    </Formik>
+                    <Formik
+                        initialValues={{amount: defaultValues.amount}}
+                        onSubmit={handleOverrideSubmit}
+                    >
+                        <Form>
+                            <p className={styles.field}>
+                                <label htmlFor="amount">amount</label>
+                                <Field
+                                    id="amount"
+                                    name="amount"
+                                    type="number"
+                                    min="1"
+                                    max="10000"
+                                    placeholder="1"
+                                />
+                                <button type="submit">Override</button>
+                            </p>
+                        </Form>
+                    </Formik>
+                </div>
+                <div className={styles.sortHolder}>
+                    <label htmlFor="sortOn">Sort On</label>
+                    <select onChange={handleSort} id='sortOn' defaultValue={'id-desc'}>
+                        <option value={'id-desc'}>Objkt ID (desc)</option>
+                        <option value={'id-asc'}>Objkt ID (asc)</option>
+                        <option value={'floor-desc'}>Floor (desc)</option>
+                        <option value={'floor-asc'}>Floor (asc)</option>
+                        <option value={'last-desc'}>Last (desc)</option>
+                        <option value={'last-asc'}>Last (asc)</option>
+                        <option value={'avg-desc'}>Avg (desc)</option>
+                        <option value={'avg-asc'}>Avg (asc)</option>
+                    </select>
+                </div>
             </div>
             <p className={styles.field}>
                 <button
@@ -117,7 +168,8 @@ const BatchSwap = () => {
                                 alt={objkt.title}
                                 loading="lazy"
                                 className={styles.img}
-                                src={`https://cloudflare-ipfs.com/ipfs/${objkt.display_uri.slice(7)}`}
+                                src={`https://cloudflare-ipfs.com/ipfs/${objkt.display_uri.slice(
+                                    7)}`}
                             />
                             <div className={styles.objktInfo}>
                                 <h2 className={styles.title}>#{objkt.id} {objkt.title}</h2>

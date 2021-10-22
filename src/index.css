@@ -34,7 +34,7 @@ label {
   margin-right: 8px;
 }
 
-input {
+input, select {
   border: 1px solid hsl(227, 49%, 94%);
   border-radius: 0;
   padding: 6px 5px;
