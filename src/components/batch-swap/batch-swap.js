@@ -66,31 +66,43 @@ const BatchSwap = () => {
     const handleSort = (event) => {
         switch(event.target.value) {
             case 'id-asc':
-                setObjkts(prevState => ([...prevState.sort((a, b) => a.id - b.id)]))
+                setObjkts(
+                    prevState => ([...prevState.sort((a, b) => a.id - b.id)]));
                 break;
             case 'id-desc':
-                setObjkts(prevState => ([...prevState.sort((a, b) => b.id - a.id)]));
+                setObjkts(
+                    prevState => ([...prevState.sort((a, b) => b.id - a.id)]));
                 break;
             case 'floor-asc':
-                setObjkts(prevState => ([...prevState.sort((a, b) => a.floor - b.floor)]))
+                setObjkts(prevState => ([
+                    ...prevState.sort((a, b) => a.floor - b.floor)]));
                 break;
             case 'floor-desc':
-                setObjkts(prevState => ([...prevState.sort((a, b) => b.floor - a.floor)]));
+                setObjkts(prevState => ([
+                    ...prevState.sort((a, b) => b.floor - a.floor)]));
                 break;
             case 'last-asc':
-                setObjkts(prevState => ([...prevState.sort((a, b) => (a.tradeData?.last || -1) - (b.tradeData?.last || -1))]))
+                setObjkts(prevState => ([
+                    ...prevState.sort((a, b) => (a.tradeData?.last || -1) -
+                        (b.tradeData?.last || -1))]));
                 break;
             case 'last-desc':
-                setObjkts(prevState => ([...prevState.sort((a, b) => (b.tradeData?.last || -1) - (a.tradeData?.last || -1))]))
+                setObjkts(prevState => ([
+                    ...prevState.sort((a, b) => (b.tradeData?.last || -1) -
+                        (a.tradeData?.last || -1))]));
                 break;
             case 'avg-asc':
-                setObjkts(prevState => ([...prevState.sort((a, b) => (a.tradeData?.avg || -1) - (b.tradeData?.avg || -1))]))
+                setObjkts(prevState => ([
+                    ...prevState.sort((a, b) => (a.tradeData?.avg || -1) -
+                        (b.tradeData?.avg || -1))]));
                 break;
             case 'avg-desc':
-                setObjkts(prevState => ([...prevState.sort((a, b) => (b.tradeData?.avg || -1) - (a.tradeData?.avg || -1))]))
+                setObjkts(prevState => ([
+                    ...prevState.sort((a, b) => (b.tradeData?.avg || -1) -
+                        (a.tradeData?.avg || -1))]));
                 break;
             default:
-                console.log('Unhandled type')
+                console.log('Unhandled type');
         }
     };
 
@@ -137,7 +149,11 @@ const BatchSwap = () => {
                 </div>
                 <div className={styles.sortHolder}>
                     <label htmlFor="sortOn">Sort On</label>
-                    <select onChange={handleSort} id='sortOn' defaultValue={'id-desc'}>
+                    <select
+                        onChange={handleSort}
+                        id="sortOn"
+                        defaultValue={'id-desc'}
+                    >
                         <option value={'id-desc'}>Objkt ID (desc)</option>
                         <option value={'id-asc'}>Objkt ID (asc)</option>
                         <option value={'floor-desc'}>Floor (desc)</option>
@@ -159,27 +175,42 @@ const BatchSwap = () => {
                 {objkts && objkts.map(objkt => (
                     <div key={objkt.id} className={styles.gridCell}>
                         <div className={styles.cell}>
-                            <img
-                                alt={objkt.title}
-                                loading="lazy"
-                                className={styles.img}
-                                src={`https://cloudflare-ipfs.com/ipfs/${objkt.display_uri.slice(
-                                    7)}`}
-                            />
+                            <div className={styles.imgHolder}>
+                                <img
+                                    alt={objkt.title}
+                                    loading="lazy"
+                                    className={styles.img}
+                                    src={`https://cloudflare-ipfs.com/ipfs/${objkt.display_uri.slice(
+                                        7)}`}
+                                />
+                            </div>
                             <div className={styles.objktInfo}>
                                 <h2 className={styles.title}>#{objkt.id} {objkt.title}</h2>
-                                <p className={styles.text}>{objkt.creator_id}</p>
+                                <p
+                                    className={[
+                                        styles.text,
+                                        styles.marginBottom].join(' ')}
+                                >{objkt.creator_id}</p>
                                 <p className={styles.text}>Royalties {objkt.royalties /
                                 10}%</p>
-                                <p className={styles.text}>Swappable {objkt.totalPossessed}</p>
+                                <p
+                                    className={[
+                                        styles.text,
+                                        styles.marginBottom].join(' ')}
+                                >Swappable {objkt.totalPossessed}</p>
+                                {objkt.floor &&
+                                <p
+                                    className={[
+                                        styles.text,
+                                        styles.marginBottom].join(' ')}
+                                >Floor&nbsp;{objkt.floor}ꜩ</p>}
                                 {objkt.tradeData && <p className={styles.text}>
                                     Min&nbsp;{objkt.tradeData.min}ꜩ
                                     Max&nbsp;{objkt.tradeData.max}ꜩ
-                                    Avg&nbsp;{objkt.tradeData.average}ꜩ
+                                    <br/>
                                     Last&nbsp;{objkt.tradeData.last}ꜩ
+                                    Avg&nbsp;{objkt.tradeData.average}ꜩ
                                 </p>}
-                                {objkt.floor &&
-                                <p className={styles.text}>Floor&nbsp;{objkt.floor}ꜩ</p>}
                             </div>
                             <p>
                                 <button
