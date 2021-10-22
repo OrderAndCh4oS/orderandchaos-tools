@@ -83,23 +83,31 @@ const BatchSwap = () => {
                 break;
             case 'last-asc':
                 setObjkts(prevState => ([
-                    ...prevState.sort((a, b) => (a.tradeData?.last || -1) -
-                        (b.tradeData?.last || -1))]));
+                    ...prevState.sort((a, b) =>
+                        (a.tradeData?.last || -1) - (b.tradeData?.last || -1))
+                ]));
                 break;
             case 'last-desc':
                 setObjkts(prevState => ([
-                    ...prevState.sort((a, b) => (b.tradeData?.last || -1) -
-                        (a.tradeData?.last || -1))]));
+                    ...prevState.sort((a, b) =>
+                        (b.tradeData?.last || -1) - (a.tradeData?.last || -1))
+                ]));
                 break;
             case 'avg-asc':
                 setObjkts(prevState => ([
-                    ...prevState.sort((a, b) => (a.tradeData?.avg || -1) -
-                        (b.tradeData?.avg || -1))]));
+                    ...prevState.sort((a, b) =>
+                        (a.tradeData?.avg || -1) - (b.tradeData?.avg || -1))
+                ]));
                 break;
             case 'avg-desc':
                 setObjkts(prevState => ([
-                    ...prevState.sort((a, b) => (b.tradeData?.avg || -1) -
-                        (a.tradeData?.avg || -1))]));
+                    ...prevState.sort((a, b) =>
+                        (b.tradeData?.avg || -1) - (a.tradeData?.avg || -1))
+                ]));
+                break;
+            case 'creator':
+                setObjkts(prevState => ([
+                    ...prevState.sort((a, b) => a.creator_id.localeCompare(b.creator_id))]));
                 break;
             default:
                 console.log('Unhandled type');
@@ -162,6 +170,7 @@ const BatchSwap = () => {
                         <option value={'last-asc'}>Last (asc)</option>
                         <option value={'avg-desc'}>Avg (desc)</option>
                         <option value={'avg-asc'}>Avg (asc)</option>
+                        <option value={'creator'}>Creator</option>
                     </select>
                 </div>
             </div>
@@ -186,13 +195,15 @@ const BatchSwap = () => {
                             </div>
                             <div className={styles.objktInfo}>
                                 <h2 className={styles.title}>#{objkt.id} {objkt.title}</h2>
+                                {objkt.creator?.name && <p className={styles.text}>{objkt.creator.name}</p>}
                                 <p
                                     className={[
                                         styles.text,
                                         styles.marginBottom].join(' ')}
                                 >{objkt.creator_id}</p>
-                                <p className={styles.text}>Royalties {objkt.royalties /
-                                10}%</p>
+                                <p className={styles.text}>
+                                    Royalties {objkt.royalties / 10}%
+                                </p>
                                 <p
                                     className={[
                                         styles.text,

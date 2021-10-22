@@ -28,6 +28,9 @@ const query = gql`
             description
             supply
             royalties
+            creator {
+                name
+            }
             token_holders {
                 holder_id
                 quantity
