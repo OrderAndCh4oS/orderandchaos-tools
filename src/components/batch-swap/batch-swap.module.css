@@ -61,12 +61,17 @@
 }
 
 .imgHolder {
+    width: 250px;
     min-height: 250px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: center;
+    align-content: flex-start;
+    background-color: #f1f4f6;
 }
 
 .img {
-    width: 250px;
-    padding-bottom: 8px;
+    max-width: 250px;
     height: auto;
 }
 
