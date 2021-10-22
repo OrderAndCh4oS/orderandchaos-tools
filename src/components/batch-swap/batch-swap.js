@@ -5,10 +5,13 @@ import {useEffect, useState} from 'react';
 import getObjktsByWallet from '../../api/get-objkts-by-wallet';
 import styles from './batch-swap.module.css';
 import {Field, Form, Formik} from 'formik';
+import GridView from './grid-view';
+import ListView from './list-view';
 
 const BatchSwap = () => {
     const {auth} = useTezos();
     const {batchSwap} = useTools();
+    const [viewType, setViewType] = useState('grid');
     const [objkts, setObjkts] = useState();
     const [defaultValues, setDefaultValues] = useState({
         xtz: 10,
@@ -107,11 +110,16 @@ const BatchSwap = () => {
                 break;
             case 'creator':
                 setObjkts(prevState => ([
-                    ...prevState.sort((a, b) => a.creator_id.localeCompare(b.creator_id))]));
+                    ...prevState.sort(
+                        (a, b) => a.creator_id.localeCompare(b.creator_id))]));
                 break;
             default:
                 console.log('Unhandled type');
         }
+    };
+
+    const handleViewSwitch = (event) => {
+        setViewType(event.target.value)
     };
 
     return (
@@ -156,22 +164,35 @@ const BatchSwap = () => {
                     </Formik>
                 </div>
                 <div className={styles.sortHolder}>
-                    <label htmlFor="sortOn">Sort On</label>
-                    <select
-                        onChange={handleSort}
-                        id="sortOn"
-                        defaultValue={'id-desc'}
-                    >
-                        <option value={'id-desc'}>Objkt ID (desc)</option>
-                        <option value={'id-asc'}>Objkt ID (asc)</option>
-                        <option value={'floor-desc'}>Floor (desc)</option>
-                        <option value={'floor-asc'}>Floor (asc)</option>
-                        <option value={'last-desc'}>Last (desc)</option>
-                        <option value={'last-asc'}>Last (asc)</option>
-                        <option value={'avg-desc'}>Avg (desc)</option>
-                        <option value={'avg-asc'}>Avg (asc)</option>
-                        <option value={'creator'}>Creator</option>
-                    </select>
+                    <div>
+                        <label htmlFor="sortOn">Sort On</label>
+                        <select
+                            onChange={handleSort}
+                            id="sortOn"
+                            defaultValue={'id-desc'}
+                        >
+                            <option value={'id-desc'}>Objkt ID (desc)</option>
+                            <option value={'id-asc'}>Objkt ID (asc)</option>
+                            <option value={'floor-desc'}>Floor (desc)</option>
+                            <option value={'floor-asc'}>Floor (asc)</option>
+                            <option value={'last-desc'}>Last (desc)</option>
+                            <option value={'last-asc'}>Last (asc)</option>
+                            <option value={'avg-desc'}>Avg (desc)</option>
+                            <option value={'avg-asc'}>Avg (asc)</option>
+                            <option value={'creator'}>Creator</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label htmlFor="view">View</label>
+                        <select
+                            onChange={handleViewSwitch}
+                            id="view"
+                            defaultValue={'grid'}
+                        >
+                            <option value={'grid'}>Grid</option>
+                            <option value={'list'}>List</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             <p className={styles.field}>
@@ -180,89 +201,18 @@ const BatchSwap = () => {
                 >Swap
                 </button>
             </p>
-            <div className={styles.grid}>
-                {objkts && objkts.map(objkt => (
-                    <div key={objkt.id} className={styles.gridCell}>
-                        <div className={styles.cell}>
-                            <div className={styles.imgHolder}>
-                                <img
-                                    alt={objkt.title}
-                                    loading="lazy"
-                                    className={styles.img}
-                                    src={`https://cloudflare-ipfs.com/ipfs/${objkt.display_uri.slice(
-                                        7)}`}
-                                />
-                            </div>
-                            <div className={styles.objktInfo}>
-                                <h2 className={styles.title}>#{objkt.id} {objkt.title}</h2>
-                                {objkt.creator?.name && <p className={styles.text}>{objkt.creator.name}</p>}
-                                <p
-                                    className={[
-                                        styles.text,
-                                        styles.marginBottom].join(' ')}
-                                >{objkt.creator_id}</p>
-                                <p className={styles.text}>
-                                    Royalties {objkt.royalties / 10}%
-                                </p>
-                                <p
-                                    className={[
-                                        styles.text,
-                                        styles.marginBottom].join(' ')}
-                                >Swappable {objkt.totalPossessed}</p>
-                                {objkt.floor &&
-                                <p
-                                    className={[
-                                        styles.text,
-                                        styles.marginBottom].join(' ')}
-                                >Floor&nbsp;{objkt.floor}ꜩ</p>}
-                                {objkt.tradeData && <p className={styles.text}>
-                                    Min&nbsp;{objkt.tradeData.min}ꜩ
-                                    Max&nbsp;{objkt.tradeData.max}ꜩ
-                                    <br/>
-                                    Last&nbsp;{objkt.tradeData.last}ꜩ
-                                    Avg&nbsp;{objkt.tradeData.average}ꜩ
-                                </p>}
-                            </div>
-                            <p>
-                                <button
-                                    onClick={toggleObjkt(objkt)}
-                                    className={styles.selectButton}
-                                >{
-                                    objkt.id in
-                                    swapObjkts
-                                        ? 'Deselect'
-                                        : 'Select'
-                                }</button>
-                            </p>
-                            {objkt.id in swapObjkts && <div>
-                                <p>
-                                    <label htmlFor={`${objkt.id}Xtz`}>xtz</label>
-                                    <input
-                                        id={`${objkt.id}Xtz`}
-                                        type="number"
-                                        min={0.000001}
-                                        value={swapObjkts?.[objkt.id].xtz}
-                                        onChange={handleObjktChange('xtz',
-                                            objkt)}
-                                    />
-                                </p>
-                                <p>
-                                    <label htmlFor={`${objkt.id}Amount`}>Amount</label>
-                                    <input
-                                        id={`${objkt.id}Amount`}
-                                        type="number"
-                                        min={1}
-                                        max={objkt.totalPossessed}
-                                        value={swapObjkts?.[objkt.id].amount}
-                                        onChange={handleObjktChange('amount',
-                                            objkt)}
-                                    />
-                                </p>
-                            </div>}
-                        </div>
-                    </div>
-                ))}
-            </div>
+            {viewType === 'grid' && <GridView
+                objkts={objkts}
+                toggleObjkt={toggleObjkt}
+                swapObjkts={swapObjkts}
+                handleObjktChange={handleObjktChange}
+            />}
+            {viewType === 'list' && <ListView
+                objkts={objkts}
+                toggleObjkt={toggleObjkt}
+                swapObjkts={swapObjkts}
+                handleObjktChange={handleObjktChange}
+            />}
         </div>
     );
 };

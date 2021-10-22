@@ -55,6 +55,10 @@
     margin-bottom: 8px;
 }
 
+.marginLeftAuto {
+    margin-left: auto;
+}
+
 .field {
     font-size: 12px;
     margin-bottom: 8px;
@@ -81,4 +85,43 @@
 
 .hide{
     opacity: 0.5;
+}
+
+.list {
+    padding-top: 16px;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid hsl(227, 49%, 94%);
+}
+
+.listColumnSmall {
+    overflow: hidden;
+    width: 65px;
+    padding-right: 12px;
+}
+
+.listColumnMedium {
+    width: 140px;
+    padding-right: 12px;
+}
+
+.listColumnLarge {
+    width: 300px;
+    padding-right: 12px;
+}
+
+.listColumn {
+    padding-right: 12px;
+}
+
+.listImg {
+    width: 65px;
+    height: 65px;
+    object-fit: cover;
 }
