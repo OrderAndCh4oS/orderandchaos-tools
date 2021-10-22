@@ -210,7 +210,7 @@ const BatchSwap = () => {
                                         id={`${objkt.id}Amount`}
                                         type="number"
                                         min={1}
-                                        max={10000}
+                                        max={objkt.totalPossessed}
                                         value={swapObjkts?.[objkt.id].amount}
                                         onChange={handleObjktChange('amount',
                                             objkt)}
