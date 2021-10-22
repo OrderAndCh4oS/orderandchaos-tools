@@ -64,7 +64,6 @@ const BatchSwap = () => {
     };
 
     const handleSort = (event) => {
-        console.log(event.target.value);
         switch(event.target.value) {
             case 'id-asc':
                 setObjkts(prevState => ([...prevState.sort((a, b) => a.id - b.id)]))
@@ -94,10 +93,6 @@ const BatchSwap = () => {
                 console.log('Unhandled type')
         }
     };
-
-    useEffect(() => {
-        console.log(objkts?.[0]);
-    }, [objkts])
 
     return (
         <div>
