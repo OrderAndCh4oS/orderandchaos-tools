@@ -8,7 +8,7 @@ const App = () => {
     return (
         <div className={styles.wrapper}>
             <h1 className={styles.heading}>Batch Swapper</h1>
-            <p className={styles.subText}>Experimental prototype, use at your own risk.</p>
+            <p className={styles.subText}>Experimental app, use at your own risk.<br/>Make sure to double check swaps before and after transactions.</p>
             <p>{!auth
                 ? <button onClick={sync}>Sync</button>
                 : <button onClick={unsync}>Unsync</button>}
