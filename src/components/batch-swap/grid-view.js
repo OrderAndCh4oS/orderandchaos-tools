@@ -15,14 +15,22 @@ const GridView = ({objkts, toggleObjkt, swapObjkts, handleObjktChange}) =>
                         />
                     </div>
                     <div className={styles.objktInfo}>
-                        <h2 className={styles.title}>#{objkt.id} {objkt.title}</h2>
+                        <h2 className={styles.title}>
+                            <a href={`https://hicetnunc.xyz/objkt/${objkt.id}`} target="_blank" rel="noreferrer">
+                                #{objkt.id} {objkt.title}
+                            </a>
+                        </h2>
                         {objkt.creator?.name &&
                         <p className={styles.text}>{objkt.creator.name}</p>}
                         <p
                             className={[
                                 styles.text,
                                 styles.marginBottom].join(' ')}
-                        >{objkt.creator_id}</p>
+                        >
+                            <a href={`https://hicetnunc.xyz/tz/${objkt.creator_id}`} target="_blank" rel="noreferrer">
+                                {objkt.creator_id}
+                            </a>
+                        </p>
                         <p className={styles.text}>
                             Royalties {objkt.royalties / 10}%
                         </p>

@@ -12,7 +12,16 @@ h1, h2, h3 {
 
 a, a:visited {
   color: #1e2a57;
+  padding-bottom: 3px;
+  margin-bottom: 2px;
   text-decoration: none;
+}
+
+a:hover, a:active, a:focus {
+  text-decoration: none;
+  outline: none;
+  padding-bottom: 3px;
+  border-bottom: 2px solid #fff73d;
 }
 
 button {
@@ -25,6 +34,7 @@ button {
 }
 
 button:hover, button:focus {
+  outline: none;
   background-color: #fff73d;
   color: #1e2a57;
   cursor: pointer;
@@ -41,8 +51,17 @@ input, select {
   margin-right: 8px;
 }
 
-a:hover, a:active, a:focus {
-  text-decoration: underline;
+table {
+  border-collapse: collapse;
+  text-align: left;
+}
+
+tr {
+  border: 1px solid hsl(227, 49%, 94%);
+}
+
+th, td {
+  padding: 4px 8px;
 }
 
 code, button, input, textarea {

@@ -22,6 +22,7 @@ const ToolsProvider = ({children}) => {
 
         return balance / 1000000;
     };
+
     const batchSwap = async(objktsToSwap) => {
         const objkts = await Tezos.wallet.at(contracts.objkts);
         const marketplace = await Tezos.wallet.at(contracts.v2);
@@ -40,7 +41,8 @@ const ToolsProvider = ({children}) => {
                                 }
                             }])
                             .toTransferParams(
-                                {amount: 0, mutez: true, storageLimit: 100})
+                                {amount: 0, mutez: true, storageLimit: 100}
+                            )
                     },
                     {
                         kind: OpKind.TRANSACTION,
@@ -52,7 +54,8 @@ const ToolsProvider = ({children}) => {
                             parseFloat(o.xtz) * 1000000
                         )
                             .toTransferParams(
-                                {amount: 0, mutez: true, storageLimit: 270})
+                                {amount: 0, mutez: true, storageLimit: 270}
+                            )
                     }
                 ]
             , []);

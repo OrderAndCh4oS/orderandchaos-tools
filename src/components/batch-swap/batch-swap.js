@@ -12,6 +12,7 @@ const BatchSwap = () => {
     const {auth} = useTezos();
     const {batchSwap} = useTools();
     const [viewType, setViewType] = useState('grid');
+    const [showSummary, setShowSummary] = useState(false);
     const [objkts, setObjkts] = useState();
     const [defaultValues, setDefaultValues] = useState({
         xtz: 10,
@@ -47,6 +48,7 @@ const BatchSwap = () => {
             xtz: so.xtz,
             amount: so.amount
         }));
+        setShowSummary(false);
 
         await batchSwap(swapData);
     };
@@ -119,101 +121,148 @@ const BatchSwap = () => {
     };
 
     const handleViewSwitch = (event) => {
-        setViewType(event.target.value)
+        setViewType(event.target.value);
     };
 
+    const handleShowSummary = () => {
+        setShowSummary(true);
+    };
+
+    const handleClose = () => {
+        setShowSummary(false);
+    };
+
+    useEffect(() => {
+        if(!Object.values(swapObjkts).length) setShowSummary(false);
+    }, [swapObjkts]);
+
     return (
-        <div>
-            <div className={styles.formHolder}>
-                <div className={styles.overridesHolder}>
-                    <Formik
-                        initialValues={{xtz: defaultValues.xtz}}
-                        onSubmit={handleOverrideSubmit}
-                    >
-                        <Form>
-                            <p className={styles.field}>
-                                <label htmlFor="xtz">xtz</label>
-                                <Field
-                                    id="xtz"
-                                    name="xtz"
-                                    type="number"
-                                    placeholder="10"
-                                />
-                                <button type="submit">Override</button>
-                            </p>
-                        </Form>
-                    </Formik>
-                    <Formik
-                        initialValues={{amount: defaultValues.amount}}
-                        onSubmit={handleOverrideSubmit}
-                    >
-                        <Form>
-                            <p className={styles.field}>
-                                <label htmlFor="amount">amount</label>
-                                <Field
-                                    id="amount"
-                                    name="amount"
-                                    type="number"
-                                    min="1"
-                                    max="10000"
-                                    placeholder="1"
-                                />
-                                <button type="submit">Override</button>
-                            </p>
-                        </Form>
-                    </Formik>
-                </div>
-                <div className={styles.sortHolder}>
-                    <div className={styles.marginBottom}>
-                        <label htmlFor="sortOn">Sort On</label>
-                        <select
-                            onChange={handleSort}
-                            id="sortOn"
-                            defaultValue={'id-desc'}
+        <>
+            <div>
+                <div className={styles.formHolder}>
+                    <div className={styles.overridesHolder}>
+                        <Formik
+                            initialValues={{xtz: defaultValues.xtz}}
+                            onSubmit={handleOverrideSubmit}
                         >
-                            <option value={'id-desc'}>Objkt ID (desc)</option>
-                            <option value={'id-asc'}>Objkt ID (asc)</option>
-                            <option value={'floor-desc'}>Floor (desc)</option>
-                            <option value={'floor-asc'}>Floor (asc)</option>
-                            <option value={'last-desc'}>Last (desc)</option>
-                            <option value={'last-asc'}>Last (asc)</option>
-                            <option value={'avg-desc'}>Avg (desc)</option>
-                            <option value={'avg-asc'}>Avg (asc)</option>
-                            <option value={'creator'}>Creator</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label htmlFor="view">View</label>
-                        <select
-                            onChange={handleViewSwitch}
-                            id="view"
-                            defaultValue={'grid'}
+                            <Form>
+                                <p className={styles.field}>
+                                    <label htmlFor="xtz">xtz</label>
+                                    <Field
+                                        id="xtz"
+                                        name="xtz"
+                                        type="number"
+                                        placeholder="10"
+                                    />
+                                    <button type="submit">Override</button>
+                                </p>
+                            </Form>
+                        </Formik>
+                        <Formik
+                            initialValues={{amount: defaultValues.amount}}
+                            onSubmit={handleOverrideSubmit}
                         >
-                            <option value={'grid'}>Grid</option>
-                            <option value={'list'}>List</option>
-                        </select>
+                            <Form>
+                                <p className={styles.field}>
+                                    <label htmlFor="amount">amount</label>
+                                    <Field
+                                        id="amount"
+                                        name="amount"
+                                        type="number"
+                                        min="1"
+                                        max="10000"
+                                        placeholder="1"
+                                    />
+                                    <button type="submit">Override</button>
+                                </p>
+                            </Form>
+                        </Formik>
+                    </div>
+                    <div className={styles.sortHolder}>
+                        <div className={styles.marginBottom}>
+                            <label htmlFor="sortOn">Sort On</label>
+                            <select
+                                onChange={handleSort}
+                                id="sortOn"
+                                defaultValue={'id-desc'}
+                            >
+                                <option value={'id-desc'}>Objkt ID (desc)
+                                </option>
+                                <option value={'id-asc'}>Objkt ID (asc)</option>
+                                <option value={'floor-desc'}>Floor (desc)
+                                </option>
+                                <option value={'floor-asc'}>Floor (asc)</option>
+                                <option value={'last-desc'}>Last (desc)</option>
+                                <option value={'last-asc'}>Last (asc)</option>
+                                <option value={'avg-desc'}>Avg (desc)</option>
+                                <option value={'avg-asc'}>Avg (asc)</option>
+                                <option value={'creator'}>Creator</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label htmlFor="view">View</label>
+                            <select
+                                onChange={handleViewSwitch}
+                                id="view"
+                                defaultValue={'grid'}
+                            >
+                                <option value={'grid'}>Grid</option>
+                                <option value={'list'}>List</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
+                <p className={styles.field}>
+                    <button
+                        onClick={handleShowSummary}
+                    >Swap
+                    </button>
+                </p>
+                {viewType === 'grid' && <GridView
+                    objkts={objkts}
+                    toggleObjkt={toggleObjkt}
+                    swapObjkts={swapObjkts}
+                    handleObjktChange={handleObjktChange}
+                />}
+                {viewType === 'list' && <ListView
+                    objkts={objkts}
+                    toggleObjkt={toggleObjkt}
+                    swapObjkts={swapObjkts}
+                    handleObjktChange={handleObjktChange}
+                />}
             </div>
-            <p className={styles.field}>
-                <button
-                    onClick={handleBatchSwap}
-                >Swap
-                </button>
-            </p>
-            {viewType === 'grid' && <GridView
-                objkts={objkts}
-                toggleObjkt={toggleObjkt}
-                swapObjkts={swapObjkts}
-                handleObjktChange={handleObjktChange}
-            />}
-            {viewType === 'list' && <ListView
-                objkts={objkts}
-                toggleObjkt={toggleObjkt}
-                swapObjkts={swapObjkts}
-                handleObjktChange={handleObjktChange}
-            />}
-        </div>
+            {showSummary && (
+                <div className={styles.summary}>
+                    <div className={styles.summaryTableHolder}>
+                        <table>
+                            <tr>
+                                <th>Title</th>
+                                <th>Qty</th>
+                                <th>Price</th>
+                            </tr>
+                            {Object.values(swapObjkts).map(so => (
+                                <tr>
+                                    <th>{so.objkt.title}</th>
+                                    <td>{so.amount}</td>
+                                    <td>{so.xtz}ꜩ</td>
+                                    <td>
+                                        <button
+                                            onClick={toggleObjkt(so.objkt)}
+                                        >X
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </table>
+                    </div>
+                    <p className={styles.summaryButtons}>
+                        <button onClick={handleClose}>Close</button>
+                        {' '}
+                        <button onClick={handleBatchSwap}>Confirm</button>
+                    </p>
+                </div>
+            )}
+        </>
     );
 };
 
