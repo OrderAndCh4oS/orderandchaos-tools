@@ -63,11 +63,31 @@ const ToolsProvider = ({children}) => {
         return await batch.send();
     };
 
+    const batchCancel = async(swapsToCancel) => {
+        const v2 = await Tezos.wallet.at(contracts.v2);
+        const list = await swapsToCancel.reduce(
+            (arr, swapId) => ([
+                ...arr,
+                {
+                    kind: OpKind.TRANSACTION,
+                    ...v2.methods.cancel_swap(swapId).toTransferParams(
+                        {amount: 0, storageLimit: 150}
+                    )
+                }
+            ]),
+            []
+        );
+
+        const batch = await Tezos.wallet.batch(list);
+        return await batch.send();
+    };
+
     return (
         <ToolsContext.Provider
             value={{
                 getBalance,
-                batchSwap
+                batchSwap,
+                batchCancel
             }}
         >
             {children}

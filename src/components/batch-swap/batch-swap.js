@@ -2,46 +2,50 @@
 import useTezos from '../../hooks/use-tezos';
 import useTools from '../../hooks/use-tools';
 import {useEffect, useState} from 'react';
-import getObjktsByWallet from '../../api/get-objkts-by-wallet';
+import getSwappableObjktsByWallet from '../../api/get-swappable-objkts-by-wallet';
 import styles from './batch-swap.module.css';
 import {Field, Form, Formik} from 'formik';
 import GridView from './grid-view';
 import ListView from './list-view';
+import useView from '../../hooks/use-view';
+import useObjkts from '../../hooks/use-objkts';
+import UtilityMenu from '../utility-menu/utility-menu';
 
 const BatchSwap = () => {
     const {auth} = useTezos();
     const {batchSwap} = useTools();
-    const [viewType, setViewType] = useState('grid');
+    const {viewType} = useView();
+    const {objkts, setObjkts} = useObjkts();
     const [showSummary, setShowSummary] = useState(false);
-    const [objkts, setObjkts] = useState();
     const [defaultValues, setDefaultValues] = useState({
         xtz: 10,
         amount: 1
     });
-    const [swapObjkts, setSwapObjkts] = useState({});
+    const [selectedObjkts, setSelectedObjkts] = useState({});
 
     useEffect(() => {
         (async() => {
-            const objkts = await getObjktsByWallet(auth.address);
+            const objkts = await getSwappableObjktsByWallet(auth.address);
             setObjkts(objkts);
         })();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [auth]);
 
     const toggleObjkt = (objkt) => () => {
-        if(objkt.id in swapObjkts) {
-            delete swapObjkts[objkt.id];
-            setSwapObjkts({...swapObjkts});
+        if(objkt.id in selectedObjkts) {
+            delete selectedObjkts[objkt.id];
+            setSelectedObjkts({...selectedObjkts});
             return;
         }
 
-        setSwapObjkts(prevState => ({
+        setSelectedObjkts(prevState => ({
             ...prevState,
             [objkt.id]: {objkt, ...defaultValues}
         }));
     };
 
     const handleBatchSwap = async() => {
-        const swapData = Object.values(swapObjkts).map(so => ({
+        const swapData = Object.values(selectedObjkts).map(so => ({
             id: so.objkt.id,
             creator: so.objkt.creator_id,
             royalties: so.objkt.royalties,
@@ -55,73 +59,17 @@ const BatchSwap = () => {
 
     const handleOverrideSubmit = (values) => {
         setDefaultValues(prevState => ({...prevState, ...values}));
-        setSwapObjkts(prevState => (Object
+        setSelectedObjkts(prevState => (Object
             .entries(prevState)
             .reduce((obj, [k, v]) => (obj[k] = {...v, ...values}, obj), {})));
     };
 
     const handleObjktChange = (type, objkt) => (event) => {
-        setSwapObjkts(prevState => {
+        setSelectedObjkts(prevState => {
             const result = {...prevState};
             result[objkt.id][type] = Number(event.target.value);
             return result;
         });
-    };
-
-    const handleSort = (event) => {
-        switch(event.target.value) {
-            case 'id-asc':
-                setObjkts(
-                    prevState => ([...prevState.sort((a, b) => a.id - b.id)]));
-                break;
-            case 'id-desc':
-                setObjkts(
-                    prevState => ([...prevState.sort((a, b) => b.id - a.id)]));
-                break;
-            case 'floor-asc':
-                setObjkts(prevState => ([
-                    ...prevState.sort((a, b) => a.floor - b.floor)]));
-                break;
-            case 'floor-desc':
-                setObjkts(prevState => ([
-                    ...prevState.sort((a, b) => b.floor - a.floor)]));
-                break;
-            case 'last-asc':
-                setObjkts(prevState => ([
-                    ...prevState.sort((a, b) =>
-                        (a.tradeData?.last || -1) - (b.tradeData?.last || -1))
-                ]));
-                break;
-            case 'last-desc':
-                setObjkts(prevState => ([
-                    ...prevState.sort((a, b) =>
-                        (b.tradeData?.last || -1) - (a.tradeData?.last || -1))
-                ]));
-                break;
-            case 'avg-asc':
-                setObjkts(prevState => ([
-                    ...prevState.sort((a, b) =>
-                        (a.tradeData?.avg || -1) - (b.tradeData?.avg || -1))
-                ]));
-                break;
-            case 'avg-desc':
-                setObjkts(prevState => ([
-                    ...prevState.sort((a, b) =>
-                        (b.tradeData?.avg || -1) - (a.tradeData?.avg || -1))
-                ]));
-                break;
-            case 'creator':
-                setObjkts(prevState => ([
-                    ...prevState.sort(
-                        (a, b) => a.creator_id.localeCompare(b.creator_id))]));
-                break;
-            default:
-                console.log('Unhandled type');
-        }
-    };
-
-    const handleViewSwitch = (event) => {
-        setViewType(event.target.value);
     };
 
     const handleShowSummary = () => {
@@ -133,14 +81,14 @@ const BatchSwap = () => {
     };
 
     useEffect(() => {
-        if(!Object.values(swapObjkts).length) setShowSummary(false);
-    }, [swapObjkts]);
+        if(!Object.values(selectedObjkts).length) setShowSummary(false);
+    }, [selectedObjkts]);
 
     return (
         <>
             <div>
                 <div className={styles.formHolder}>
-                    <div className={styles.overridesHolder}>
+                    <div>
                         <Formik
                             initialValues={{xtz: defaultValues.xtz}}
                             onSubmit={handleOverrideSubmit}
@@ -178,39 +126,7 @@ const BatchSwap = () => {
                             </Form>
                         </Formik>
                     </div>
-                    <div className={styles.sortHolder}>
-                        <div className={styles.marginBottom}>
-                            <label htmlFor="sortOn">Sort On</label>
-                            <select
-                                onChange={handleSort}
-                                id="sortOn"
-                                defaultValue={'id-desc'}
-                            >
-                                <option value={'id-desc'}>Objkt ID (desc)
-                                </option>
-                                <option value={'id-asc'}>Objkt ID (asc)</option>
-                                <option value={'floor-desc'}>Floor (desc)
-                                </option>
-                                <option value={'floor-asc'}>Floor (asc)</option>
-                                <option value={'last-desc'}>Last (desc)</option>
-                                <option value={'last-asc'}>Last (asc)</option>
-                                <option value={'avg-desc'}>Avg (desc)</option>
-                                <option value={'avg-asc'}>Avg (asc)</option>
-                                <option value={'creator'}>Creator</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label htmlFor="view">View</label>
-                            <select
-                                onChange={handleViewSwitch}
-                                id="view"
-                                defaultValue={'grid'}
-                            >
-                                <option value={'grid'}>Grid</option>
-                                <option value={'list'}>List</option>
-                            </select>
-                        </div>
-                    </div>
+                    <UtilityMenu/>
                 </div>
                 <p className={styles.field}>
                     <button
@@ -221,13 +137,13 @@ const BatchSwap = () => {
                 {viewType === 'grid' && <GridView
                     objkts={objkts}
                     toggleObjkt={toggleObjkt}
-                    swapObjkts={swapObjkts}
+                    selectedObjkts={selectedObjkts}
                     handleObjktChange={handleObjktChange}
                 />}
                 {viewType === 'list' && <ListView
                     objkts={objkts}
                     toggleObjkt={toggleObjkt}
-                    swapObjkts={swapObjkts}
+                    selectedObjkts={selectedObjkts}
                     handleObjktChange={handleObjktChange}
                 />}
             </div>
@@ -240,7 +156,7 @@ const BatchSwap = () => {
                                 <th>Qty</th>
                                 <th>Price</th>
                             </tr>
-                            {Object.values(swapObjkts).map(so => (
+                            {Object.values(selectedObjkts).map(so => (
                                 <tr>
                                     <th>{so.objkt.title}</th>
                                     <td>{so.amount}</td>

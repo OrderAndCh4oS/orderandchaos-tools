@@ -5,12 +5,21 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import TezosProvider from './context/tezos-context';
 import ToolsProvider from './context/tools-context';
+import ViewProvider from './context/view-context';
+import ObjktsProvider from './context/objkts-context';
+import {BrowserRouter} from 'react-router-dom';
 
 ReactDOM.render(
     <React.StrictMode>
         <TezosProvider>
             <ToolsProvider>
-                <App/>
+                <ViewProvider>
+                    <ObjktsProvider>
+                        <BrowserRouter>
+                            <App/>
+                        </BrowserRouter>
+                    </ObjktsProvider>
+                </ViewProvider>
             </ToolsProvider>
         </TezosProvider>
     </React.StrictMode>,
