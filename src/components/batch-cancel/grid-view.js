@@ -62,7 +62,7 @@ const GridView = ({objkts, toggleSwap, selectedSwaps}) =>
                         </p>}
                     </div>
                     {objkt.userSwaps?.map(swap => (
-                        <p className={styles.text}>
+                        <p className={styles.swaps}>
                             {swap.amount_left} @ {priceToXtz(swap.price)}ꜩ{' '}
                             <button onClick={toggleSwap({objkt, swap})}>{
                                 swap.id in selectedSwaps
