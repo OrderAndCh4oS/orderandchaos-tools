@@ -1,7 +1,7 @@
-import styles from './batch-swap.module.css';
+import styles from './batch-cancel.module.css';
+import {priceToXtz} from '../../api/get-swappable-objkts-by-wallet';
 
-
-const ListView = ({objkts, toggleObjkt, selectedObjkts, handleObjktChange}) =>
+const ListView = ({objkts, toggleSwap, selectedSwaps}) =>
     <div className={styles.list}>
         {objkts && objkts.map(objkt => (
             <div key={objkt.id} className={styles.row}>
@@ -16,7 +16,11 @@ const ListView = ({objkts, toggleObjkt, selectedObjkts, handleObjktChange}) =>
                 </div>
                 <div className={styles.listColumnLarge}>
                     <h2 className={styles.title}>
-                        <a href={`https://hicetnunc.xyz/objkt/${objkt.id}`} target="_blank" rel="noreferrer">
+                        <a
+                            href={`https://hicetnunc.xyz/objkt/${objkt.id}`}
+                            target="_blank"
+                            rel="noreferrer"
+                        >
                             #{objkt.id} {objkt.title}
                         </a>
                     </h2>
@@ -27,7 +31,11 @@ const ListView = ({objkts, toggleObjkt, selectedObjkts, handleObjktChange}) =>
                             styles.text,
                             styles.marginBottom].join(' ')}
                     >
-                        <a href={`https://hicetnunc.xyz/tz/${objkt.creator_id}`} target="_blank" rel="noreferrer">
+                        <a
+                            href={`https://hicetnunc.xyz/tz/${objkt.creator_id}`}
+                            target="_blank"
+                            rel="noreferrer"
+                        >
                             {objkt.creator_id}
                         </a>
                     </p>
@@ -37,7 +45,7 @@ const ListView = ({objkts, toggleObjkt, selectedObjkts, handleObjktChange}) =>
                         className={[
                             styles.text,
                             styles.marginBottom].join(' ')}
-                    >Swappable {objkt.totalPossessed}</p>
+                    >Swapped {objkt.totalSwapped}</p>
                 </div>
                 <div className={styles.listColumnMedium}>
                     {objkt.floor && <p
@@ -56,41 +64,17 @@ const ListView = ({objkts, toggleObjkt, selectedObjkts, handleObjktChange}) =>
                         Avg&nbsp;{objkt.tradeData.average}ꜩ
                     </p>}
                 </div>
-                {objkt.id in selectedObjkts && <>
-                    <div className={styles.listColumn}>
-                        <label htmlFor={`${objkt.id}Xtz`}>xtz</label>
-                        <input
-                            id={`${objkt.id}Xtz`}
-                            type="number"
-                            min={0.000001}
-                            value={selectedObjkts?.[objkt.id].xtz}
-                            onChange={handleObjktChange('xtz',
-                                objkt)}
-                        />
-                    </div>
-                    <div className={styles.listColumn}>
-                        <label htmlFor={`${objkt.id}Amount`}>Amount</label>
-                        <input
-                            id={`${objkt.id}Amount`}
-                            type="number"
-                            min={1}
-                            max={objkt.totalPossessed}
-                            value={selectedObjkts?.[objkt.id].amount}
-                            onChange={handleObjktChange('amount',
-                                objkt)}
-                        />
-                    </div>
-                </>
-                }
                 <div className={styles.marginLeftAuto}>
-                    <p>
-                        <button onClick={toggleObjkt(objkt)}>{
-                            objkt.id in
-                            selectedObjkts
-                                ? 'Deselect'
-                                : 'Select'
-                        }</button>
-                    </p>
+                    {objkt.userSwaps?.map(swap => (
+                        <p className={styles.swaps}>
+                            {swap.amount_left} @ {priceToXtz(swap.price)}ꜩ{' '}
+                            <button onClick={toggleSwap({objkt, swap})}>{
+                                swap.id in selectedSwaps
+                                    ? 'Deselect'
+                                    : 'Select'
+                            }</button>
+                        </p>
+                    ))}
                 </div>
             </div>
         ))}

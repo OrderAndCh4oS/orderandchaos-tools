@@ -52,6 +52,16 @@
     margin: 0;
 }
 
+.swaps {
+    font-size: 12px;
+    line-height: 16px;
+    margin: 0;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid hsl(227, 49%, 94%);
+
+}
+
 .marginBottom {
     margin-bottom: 8px;
 }

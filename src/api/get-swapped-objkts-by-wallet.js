@@ -7,16 +7,8 @@ export const priceToXtz = price => (price / 1000000)
     .replace(/\.$/, '');
 
 const query = gql`
-    query getObjktsByWallet($address: String!) {
-        hic_et_nunc_token(
-            where: {
-                token_holders: {
-                    quantity: {_gt: "0"},
-                    holder_id: {_eq: $address}
-                }
-            },
-            order_by: {id: desc}
-        ) {
+    query getSwappedObjktsByWallet($address: String!) {
+        hic_et_nunc_token(where: {swaps: {creator_id: {_eq: $address}, amount_left: {_gt: 0}, status: {_eq: 0}}}, order_by: {id: desc}) {
             id
             creator_id
             artifact_uri
@@ -35,11 +27,11 @@ const query = gql`
                 holder_id
                 quantity
             }
-            swaps(where: {status: {_eq: "0"}}, order_by: {price: asc}) {
-                amount
+            swaps(where: {status: {_eq: 0}}, order_by: {price: asc}) {
+                id
+                price
                 amount_left
                 creator_id
-                price
             }
             trades {
                 timestamp
@@ -59,12 +51,16 @@ const getTotalPossessed = (tokenHolders, address) => tokenHolders
                 : count
         , 0);
 
+const getUserSwaps = (swaps, address) => swaps
+    .filter((swap) => swap.creator_id === address);
+
 const getTradeData = trades => {
     let min = Infinity;
     let max = 0;
     let total = 0;
     let count = trades.length;
-    trades = trades.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    trades = trades.sort((a, b) => new Date(b.timestamp).getTime() -
+        new Date(a.timestamp).getTime());
     for(const trade of trades) {
         if(trade.swap.price < min) min = trade.swap.price;
         if(trade.swap.price > max) max = trade.swap.price;
@@ -77,18 +73,20 @@ const getTradeData = trades => {
         total: priceToXtz(total),
         average: priceToXtz(total / count),
         last: priceToXtz(trades?.[0].swap.price) || 0,
-        count,
+        count
     };
 };
 
-const getFloor = swaps => priceToXtz(swaps.reduce((floor, s) => s.price < floor ? s.price : floor, Infinity));
+const getFloor = swaps => priceToXtz(
+    swaps.reduce((floor, s) => s.price < floor ? s.price : floor, Infinity));
 
-const getObjktsByWallet = async(address) => {
+const getSwappedObjktsByWallet = async(address) => {
     try {
         const response = await gqlClient.request(query, {address});
         return response.hic_et_nunc_token.map(objkt => ({
             ...objkt,
             totalPossessed: getTotalPossessed(objkt.token_holders, address),
+            userSwaps: getUserSwaps(objkt.swaps, address),
             tradeData: objkt.trades.length ? getTradeData(objkt.trades) : null,
             floor: objkt.swaps.length ? getFloor(objkt.swaps) : null
         }));
@@ -98,4 +96,4 @@ const getObjktsByWallet = async(address) => {
     }
 };
 
-export default getObjktsByWallet;
+export default getSwappedObjktsByWallet;
