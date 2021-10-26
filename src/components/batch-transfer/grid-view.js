@@ -1,7 +1,6 @@
-import styles from './batch-cancel.module.css';
-import {priceToXtz} from '../../api/get-swappable-objkts-by-wallet';
+import styles from './batch-transfer.module.css';
 
-const GridView = ({objkts, toggleSwap, selectedSwaps}) =>
+const GridView = ({objkts, toggleObjkt, selectedObjkts, handleObjktChange}) =>
     <div className={styles.grid}>
         {objkts && objkts.map(objkt => (
             <div key={objkt.id} className={styles.gridCell}>
@@ -14,13 +13,9 @@ const GridView = ({objkts, toggleSwap, selectedSwaps}) =>
                             src={`https://cloudflare-ipfs.com/ipfs/${objkt.display_uri.slice(7)}`}
                         />
                     </div>
-                    <div className={styles.marginBottom}>
+                    <div className={styles.objktInfo}>
                         <h2 className={styles.title}>
-                            <a
-                                href={`https://hicetnunc.xyz/objkt/${objkt.id}`}
-                                target="_blank"
-                                rel="noreferrer"
-                            >
+                            <a href={`https://hicetnunc.xyz/objkt/${objkt.id}`} target="_blank" rel="noreferrer">
                                 #{objkt.id} {objkt.title}
                             </a>
                         </h2>
@@ -31,11 +26,7 @@ const GridView = ({objkts, toggleSwap, selectedSwaps}) =>
                                 styles.text,
                                 styles.marginBottom].join(' ')}
                         >
-                            <a
-                                href={`https://hicetnunc.xyz/tz/${objkt.creator_id}`}
-                                target="_blank"
-                                rel="noreferrer"
-                            >
+                            <a href={`https://hicetnunc.xyz/tz/${objkt.creator_id}`} target="_blank" rel="noreferrer">
                                 {objkt.creator_id}
                             </a>
                         </p>
@@ -46,7 +37,7 @@ const GridView = ({objkts, toggleSwap, selectedSwaps}) =>
                             className={[
                                 styles.text,
                                 styles.marginBottom].join(' ')}
-                        >Swapped {objkt.totalSwapped}</p>
+                        >Swappable {objkt.totalPossessed}</p>
                         {objkt.floor &&
                         <p
                             className={[
@@ -61,16 +52,39 @@ const GridView = ({objkts, toggleSwap, selectedSwaps}) =>
                             Avg&nbsp;{objkt.tradeData.average}ꜩ
                         </p>}
                     </div>
-                    {objkt.userSwaps?.map(swap => (
-                        <p key={swap.id} className={styles.swaps}>
-                            {swap.amount_left} @ {priceToXtz(swap.price)}ꜩ{' '}
-                            <button onClick={toggleSwap({objkt, swap})}>{
-                                swap.id in selectedSwaps
-                                    ? 'Deselect'
-                                    : 'Select'
-                            }</button>
+                    <p>
+                        <button
+                            onClick={toggleObjkt(objkt)}
+                            className={styles.selectButton}
+                        >{
+                            objkt.id in
+                            selectedObjkts
+                                ? 'Deselect'
+                                : 'Select'
+                        }</button>
+                    </p>
+                    {objkt.id in selectedObjkts && <div>
+                        <p>
+                            <label htmlFor={`${objkt.id}Address`}>address</label>
+                            <input
+                                id={`${objkt.id}Address`}
+                                value={selectedObjkts?.[objkt.id].address}
+                                onChange={handleObjktChange('address', objkt)}
+                            />
                         </p>
-                    ))}
+                        <p>
+                            <label htmlFor={`${objkt.id}Amount`}>Amount</label>
+                            <input
+                                id={`${objkt.id}Amount`}
+                                type="number"
+                                min={1}
+                                max={objkt.totalPossessed}
+                                value={selectedObjkts?.[objkt.id].amount}
+                                onChange={handleObjktChange('amount',
+                                    objkt)}
+                            />
+                        </p>
+                    </div>}
                 </div>
             </div>
         ))}

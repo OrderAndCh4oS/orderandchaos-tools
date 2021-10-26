@@ -2,8 +2,9 @@
 import useTezos from '../../hooks/use-tezos';
 import useTools from '../../hooks/use-tools';
 import {useEffect, useState} from 'react';
-import getSwappableObjktsByWallet from '../../api/get-swappable-objkts-by-wallet';
-import styles from './batch-swap.module.css';
+import getSwappableObjktsByWallet
+    from '../../api/get-swappable-objkts-by-wallet';
+import styles from './batch-transfer.module.css';
 import {Field, Form, Formik} from 'formik';
 import GridView from './grid-view';
 import ListView from './list-view';
@@ -11,15 +12,15 @@ import useView from '../../hooks/use-view';
 import useObjkts from '../../hooks/use-objkts';
 import UtilityMenu from '../utility-menu/utility-menu';
 
-const BatchSwap = () => {
+const BatchTransfer = () => {
     const {auth} = useTezos();
-    const {batchSwap} = useTools();
+    const {batchTransfer} = useTools();
     const {viewType} = useView();
     const {objkts, setObjkts} = useObjkts();
     const [showSummary, setShowSummary] = useState(false);
     const [transactionStatus, setTransactionStatus] = useState(null);
     const [defaultValues, setDefaultValues] = useState({
-        xtz: 10,
+        address: '',
         amount: 1
     });
     const [selectedObjkts, setSelectedObjkts] = useState({});
@@ -45,20 +46,19 @@ const BatchSwap = () => {
         }));
     };
 
-    const handleBatchSwap = async() => {
+    const handleBatchTransfer = async() => {
         setTransactionStatus('Transaction in progress…');
         const data = Object.values(selectedObjkts).map(so => ({
             id: so.objkt.id,
-            creator: so.objkt.creator_id,
-            royalties: so.objkt.royalties,
-            xtz: so.xtz,
-            amount: so.amount
+            address: so.address,
+            amount: Number(so.amount)
         }));
         setSelectedObjkts({});
         setShowSummary(false);
+        console.log(data);
+        const isSuccessful = await batchTransfer(data);
 
-        const isSuccessful = await batchSwap(data);
-        setTransactionStatus(isSuccessful ? 'Objkts Swapped' : 'Failed');
+        setTransactionStatus(isSuccessful ? 'Objkts Sent' : 'Failed');
         if(isSuccessful) {
             const objkts = await getSwappableObjktsByWallet(auth.address);
             setObjkts(objkts);
@@ -78,7 +78,7 @@ const BatchSwap = () => {
     const handleObjktChange = (type, objkt) => (event) => {
         setSelectedObjkts(prevState => {
             const result = {...prevState};
-            result[objkt.id][type] = Number(event.target.value);
+            result[objkt.id][type] = event.target.value;
             return result;
         });
     };
@@ -105,17 +105,16 @@ const BatchSwap = () => {
                 <div className={styles.formHolder}>
                     <div>
                         <Formik
-                            initialValues={{xtz: defaultValues.xtz}}
+                            initialValues={{address: defaultValues.address}}
                             onSubmit={handleOverrideSubmit}
                         >
                             <Form>
                                 <p className={styles.field}>
-                                    <label htmlFor="xtz">xtz</label>
+                                    <label htmlFor="address">address</label>
                                     <Field
-                                        id="xtz"
-                                        name="xtz"
-                                        type="number"
-                                        placeholder="10"
+                                        id="address"
+                                        name="address"
+                                        placeholder="tz1…"
                                     />
                                     <button type="submit">Override</button>
                                 </p>
@@ -146,7 +145,7 @@ const BatchSwap = () => {
                 <p className={styles.field}>
                     <button
                         onClick={handleShowSummary}
-                    >Swap
+                    >Send
                     </button>
                 </p>
                 {viewType === 'grid' && <GridView
@@ -170,7 +169,7 @@ const BatchSwap = () => {
                             <tr>
                                 <th>Title</th>
                                 <th>Qty</th>
-                                <th>Price</th>
+                                <th>Address</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -178,11 +177,12 @@ const BatchSwap = () => {
                                 <tr key={so.objkt.id}>
                                     <th>{so.objkt.title}</th>
                                     <td>{so.amount}</td>
-                                    <td>{so.xtz}ꜩ</td>
+                                    <td>{so.address.slice(0,
+                                        5)}…{so.address.slice(-5)}</td>
                                     <td>
-                                        <button
-                                            onClick={toggleObjkt(so.objkt)}
-                                        >X</button>
+                                        <button onClick={toggleObjkt(so.objkt)}>
+                                            X
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
@@ -192,7 +192,7 @@ const BatchSwap = () => {
                     <p className={styles.summaryButtons}>
                         <button onClick={handleCloseModal}>Close</button>
                         {' '}
-                        <button onClick={handleBatchSwap}>Confirm</button>
+                        <button onClick={handleBatchTransfer}>Confirm</button>
                     </p>
                 </div>
             )}
@@ -206,4 +206,4 @@ const BatchSwap = () => {
     );
 };
 
-export default BatchSwap;
+export default BatchTransfer;
