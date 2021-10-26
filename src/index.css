@@ -17,7 +17,7 @@ a, a:visited {
   text-decoration: none;
 }
 
-a:hover, a:active, a:focus {
+a:hover, a:active, a:focus, a.active {
   text-decoration: none;
   outline: none;
   padding-bottom: 3px;
