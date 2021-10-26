@@ -9,7 +9,7 @@ import useView from '../../hooks/use-view';
 import useObjkts from '../../hooks/use-objkts';
 import UtilityMenu from '../utility-menu/utility-menu';
 import getSwappedObjktsByWallet from '../../api/get-swapped-objkts-by-wallet';
-import {priceToXtz} from '../../api/get-swappable-objkts-by-wallet';
+import getSwappableObjktsByWallet, {priceToXtz} from '../../api/get-swappable-objkts-by-wallet';
 
 const BatchCancel = () => {
     const {auth} = useTezos();
@@ -17,6 +17,7 @@ const BatchCancel = () => {
     const {viewType} = useView();
     const {objkts, setObjkts} = useObjkts();
     const [showSummary, setShowSummary] = useState(false);
+    const [transactionStatus, setTransactionStatus] = useState(null);
     const [selectedSwaps, setSelectedSwaps] = useState({});
 
     useEffect(() => {
@@ -41,18 +42,31 @@ const BatchCancel = () => {
     };
 
     const handleBatchCancel = async() => {
+        setTransactionStatus('Transaction in progress…');
         const cancelData = Object.values(selectedSwaps).map(so => so.swap.id);
+        setSelectedSwaps({});
         setShowSummary(false);
-
-        await batchCancel(cancelData);
+        const isSuccessful = await batchCancel(cancelData);
+        setTransactionStatus(isSuccessful ? 'Swaps Cancelled' : 'Failed');
+        if(isSuccessful) {
+            const objkts = await getSwappableObjktsByWallet(auth.address);
+            setObjkts(objkts);
+        }
+        setTimeout(() => {
+            setTransactionStatus(null);
+        }, 2000);
     };
 
     const handleShowSummary = () => {
         setShowSummary(true);
     };
 
-    const handleClose = () => {
+    const handleCloseModal = () => {
         setShowSummary(false);
+    };
+
+    const handleCloseToast = () => {
+        setTransactionStatus(null);
     };
 
     useEffect(() => {
@@ -95,7 +109,7 @@ const BatchCancel = () => {
                             </thead>
                             <tbody>
                             {Object.values(selectedSwaps).map(s => (
-                                <tr>
+                                <tr key={s.objkt.id}>
                                     <th>{s.objkt.title}</th>
                                     <th>{s.swap.amount_left}</th>
                                     <th>{priceToXtz(s.swap.price)}ꜩ</th>
@@ -110,10 +124,16 @@ const BatchCancel = () => {
                         </table>
                     </div>
                     <p className={styles.summaryButtons}>
-                        <button onClick={handleClose}>Close</button>
+                        <button onClick={handleCloseModal}>Close</button>
                         {' '}
                         <button onClick={handleBatchCancel}>Confirm</button>
                     </p>
+                </div>
+            )}
+            {transactionStatus && (
+                <div className={styles.toast}>
+                    <p className={styles.toastText}>{transactionStatus}</p>
+                    <button onClick={handleCloseToast}>Close</button>
                 </div>
             )}
         </>

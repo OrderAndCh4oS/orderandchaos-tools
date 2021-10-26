@@ -4,7 +4,9 @@ import {OpKind} from '@taquito/taquito';
 
 export const ToolsContext = createContext({
     getBalance: async() => {},
-    batchSwap: async() => {}
+    batchSwap: async() => {},
+    batchCancel: async() => {},
+    batchTransfer: async() => {}
 });
 
 const contracts = {
@@ -13,6 +15,8 @@ const contracts = {
     v2: 'KT1HbQepzV1nVGg8QVznG7z4RcHseD5kwqBn',
     objkts: 'KT1RJ6PbjHpwc3M5rw5s2Nbmefwbuwbdxton'
 };
+
+const confirmations = 2;
 
 const ToolsProvider = ({children}) => {
     const {Tezos, auth} = useTezos();
@@ -24,62 +28,100 @@ const ToolsProvider = ({children}) => {
     };
 
     const batchSwap = async(objktsToSwap) => {
-        const objkts = await Tezos.wallet.at(contracts.objkts);
-        const marketplace = await Tezos.wallet.at(contracts.v2);
+        try {
+            const objkts = await Tezos.wallet.at(contracts.objkts);
+            const marketplace = await Tezos.wallet.at(contracts.v2);
 
-        const list = objktsToSwap.reduce((arr, o) =>
-                [
-                    ...arr,
-                    {
-                        kind: OpKind.TRANSACTION,
-                        ...objkts.methods.update_operators([
-                            {
-                                add_operator: {
-                                    operator: contracts.v2,
-                                    token_id: parseInt(o.id),
-                                    owner: auth.address
-                                }
-                            }])
-                            .toTransferParams(
-                                {amount: 0, mutez: true, storageLimit: 100}
+            const list = objktsToSwap.reduce((arr, o) =>
+                    [
+                        ...arr,
+                        {
+                            kind: OpKind.TRANSACTION,
+                            ...objkts.methods.update_operators([
+                                {
+                                    add_operator: {
+                                        operator: contracts.v2,
+                                        token_id: parseInt(o.id),
+                                        owner: auth.address
+                                    }
+                                }])
+                                .toTransferParams(
+                                    {amount: 0, mutez: true, storageLimit: 100}
+                                )
+                        },
+                        {
+                            kind: OpKind.TRANSACTION,
+                            ...marketplace.methods.swap(
+                                o.creator,
+                                parseInt(o.amount),
+                                parseInt(o.id),
+                                parseFloat(o.royalties),
+                                parseFloat(o.xtz) * 1000000
                             )
-                    },
-                    {
-                        kind: OpKind.TRANSACTION,
-                        ...marketplace.methods.swap(
-                            o.creator,
-                            parseInt(o.amount),
-                            parseInt(o.id),
-                            parseFloat(o.royalties),
-                            parseFloat(o.xtz) * 1000000
-                        )
-                            .toTransferParams(
-                                {amount: 0, mutez: true, storageLimit: 270}
-                            )
-                    }
-                ]
-            , []);
-        const batch = await Tezos.wallet.batch(list);
-        return await batch.send();
+                                .toTransferParams(
+                                    {amount: 0, mutez: true, storageLimit: 270}
+                                )
+                        }
+                    ]
+                , []);
+            const batch = await Tezos.wallet.batch(list);
+            const operation = await batch.send();
+            await operation.confirmation(confirmations);
+        } catch(e) {
+            console.log('Error:', e);
+            return false;
+        }
+        return true;
     };
 
     const batchCancel = async(swapsToCancel) => {
-        const v2 = await Tezos.wallet.at(contracts.v2);
-        const list = await swapsToCancel.reduce(
-            (arr, swapId) => ([
-                ...arr,
+        try {
+            const v2 = await Tezos.wallet.at(contracts.v2);
+            const list = await swapsToCancel.reduce(
+                (arr, swapId) => ([
+                    ...arr,
+                    {
+                        kind: OpKind.TRANSACTION,
+                        ...v2.methods.cancel_swap(swapId).toTransferParams(
+                            {amount: 0, storageLimit: 150}
+                        )
+                    }
+                ]),
+                []
+            );
+
+            const batch = await Tezos.wallet.batch(list);
+            const operation = await batch.send();
+            await operation.confirmation(confirmations);
+        } catch(e) {
+            console.log('Error:', e);
+            return false;
+        }
+        return true;
+    };
+
+    const batchTransfer = async(objktsToTransfer) => {
+        try {
+            const objkts = await Tezos.wallet.at(contracts.objkts);
+            const params = [
                 {
-                    kind: OpKind.TRANSACTION,
-                    ...v2.methods.cancel_swap(swapId).toTransferParams(
-                        {amount: 0, storageLimit: 150}
+                    from_: auth.address,
+                    txs: objktsToTransfer.map(data => ({
+                            to_: data.address,
+                            token_id: data.id,
+                            amount: data.amount
+                        })
                     )
                 }
-            ]),
-            []
-        );
-
-        const batch = await Tezos.wallet.batch(list);
-        return await batch.send();
+            ];
+            const operation = await objkts.methods.transfer(params)
+                .send({amount: 0, mutez: true});
+            await operation.confirmation(confirmations);
+        } catch(e) {
+            console.log('Error:', e);
+            return false;
+        }
+        return true;
     };
 
     return (
@@ -87,7 +129,8 @@ const ToolsProvider = ({children}) => {
             value={{
                 getBalance,
                 batchSwap,
-                batchCancel
+                batchCancel,
+                batchTransfer
             }}
         >
             {children}
