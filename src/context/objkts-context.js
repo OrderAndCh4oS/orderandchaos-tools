@@ -38,13 +38,37 @@ const ObjktsProvider = ({children}) => {
             case 'avg-asc':
                 setObjkts(prevState => ([
                     ...prevState.sort((a, b) =>
-                        (a.tradeData?.avg || -1) - (b.tradeData?.avg || -1))
+                        (a.tradeData?.average || -1) - (b.tradeData?.average || -1))
                 ]));
                 break;
             case 'avg-desc':
                 setObjkts(prevState => ([
                     ...prevState.sort((a, b) =>
-                        (b.tradeData?.avg || -1) - (a.tradeData?.avg || -1))
+                        (b.tradeData?.average || -1) - (a.tradeData?.average || -1))
+                ]));
+                break;
+            case 'min-asc':
+                setObjkts(prevState => ([
+                    ...prevState.sort((a, b) =>
+                        (a.tradeData?.min || -1) - (b.tradeData?.min || -1))
+                ]));
+                break;
+            case 'min-desc':
+                setObjkts(prevState => ([
+                    ...prevState.sort((a, b) =>
+                        (b.tradeData?.min || -1) - (a.tradeData?.min || -1))
+                ]));
+                break;
+            case 'max-asc':
+                setObjkts(prevState => ([
+                    ...prevState.sort((a, b) =>
+                        (a.tradeData?.max || -1) - (b.tradeData?.max || -1))
+                ]));
+                break;
+            case 'max-desc':
+                setObjkts(prevState => ([
+                    ...prevState.sort((a, b) =>
+                        (b.tradeData?.max || -1) - (a.tradeData?.max || -1))
                 ]));
                 break;
             case 'creator':
