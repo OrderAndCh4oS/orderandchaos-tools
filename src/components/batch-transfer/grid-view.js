@@ -37,7 +37,7 @@ const GridView = ({objkts, toggleObjkt, selectedObjkts, handleObjktChange}) =>
                             className={[
                                 styles.text,
                                 styles.marginBottom].join(' ')}
-                        >Swappable {objkt.totalPossessed}</p>
+                        >Available {objkt.totalPossessed}</p>
                         {objkt.floor &&
                         <p
                             className={[
@@ -65,7 +65,7 @@ const GridView = ({objkts, toggleObjkt, selectedObjkts, handleObjktChange}) =>
                     </p>
                     {objkt.id in selectedObjkts && <div>
                         <p>
-                            <label htmlFor={`${objkt.id}Address`}>address</label>
+                            <label htmlFor={`${objkt.id}Address`}>Address</label>
                             <input
                                 id={`${objkt.id}Address`}
                                 value={selectedObjkts?.[objkt.id].address}
