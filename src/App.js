@@ -11,7 +11,7 @@ const App = () => {
     return (
         <div className={styles.wrapper}>
             <h1 className={styles.heading}>Order & Chaos Tools</h1>
-            <p className={styles.subText}>Experimental app, use at your own risk.<br/>Make sure to double check swaps before and after transactions.</p>
+            <p className={styles.subText}>Experimental dApp, use at your own risk.<br/>Make sure to double check everything before and after transactions.</p>
             <p>
                 <NavLink exact to="/" activeClassName="active">Batch Swap</NavLink>{' / '}
                 <NavLink exact to="/cancel-swaps" activeClassName="active">Batch Cancel</NavLink>{' / '}
