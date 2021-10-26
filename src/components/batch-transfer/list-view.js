@@ -37,35 +37,15 @@ const ListView = ({objkts, toggleObjkt, selectedObjkts, handleObjktChange}) =>
                         className={[
                             styles.text,
                             styles.marginBottom].join(' ')}
-                    >Swappable {objkt.totalPossessed}</p>
-                </div>
-                <div className={styles.listColumnMedium}>
-                    {objkt.floor && <p
-                        className={styles.text}
-                    >Floor&nbsp;{objkt.floor}ꜩ</p>}
-                    <p className={styles.text}>
-                        Royalties {objkt.royalties / 10}%
-                    </p>
-                </div>
-                <div className={styles.listColumnMedium}>
-                    {objkt.tradeData && <p className={styles.text}>
-                        Min&nbsp;{objkt.tradeData.min}ꜩ
-                        Max&nbsp;{objkt.tradeData.max}ꜩ
-                        <br/>
-                        Last&nbsp;{objkt.tradeData.last}ꜩ
-                        Avg&nbsp;{objkt.tradeData.average}ꜩ
-                    </p>}
+                    >Available {objkt.totalPossessed}</p>
                 </div>
                 {objkt.id in selectedObjkts && <>
                     <div className={styles.listColumn}>
-                        <label htmlFor={`${objkt.id}Xtz`}>xtz</label>
+                        <label htmlFor={`${objkt.id}Address`}>Address</label>
                         <input
-                            id={`${objkt.id}Xtz`}
-                            type="number"
-                            min={0.000001}
-                            value={selectedObjkts?.[objkt.id].xtz}
-                            onChange={handleObjktChange('xtz',
-                                objkt)}
+                            id={`${objkt.id}Address`}
+                            value={selectedObjkts?.[objkt.id].address}
+                            onChange={handleObjktChange('address', objkt)}
                         />
                     </div>
                     <div className={styles.listColumn}>
