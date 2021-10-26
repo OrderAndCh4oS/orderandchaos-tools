@@ -23,6 +23,10 @@ const UtilityMenu = () => {
                     <option value={'last-asc'}>Last (asc)</option>
                     <option value={'avg-desc'}>Avg (desc)</option>
                     <option value={'avg-asc'}>Avg (asc)</option>
+                    <option value={'min-desc'}>Min (desc)</option>
+                    <option value={'min-asc'}>Min (asc)</option>
+                    <option value={'max-desc'}>Max (desc)</option>
+                    <option value={'max-asc'}>Max (asc)</option>
                     <option value={'creator'}>Creator</option>
                 </select>
             </div>
