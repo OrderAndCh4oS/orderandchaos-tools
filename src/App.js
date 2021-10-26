@@ -4,7 +4,7 @@ import Footer from './components/footer/footer';
 import BatchSwap from './components/batch-swap/batch-swap';
 import BatchCancel from './components/batch-cancel/batch-cancel';
 import BatchTransfer from './components/batch-transfer/batch-transfer';
-import {Link, Route, Switch} from 'react-router-dom';
+import {NavLink, Route, Switch} from 'react-router-dom';
 
 const App = () => {
     const {sync, unsync, auth} = useTezos();
@@ -13,9 +13,9 @@ const App = () => {
             <h1 className={styles.heading}>Order & Chaos Tools</h1>
             <p className={styles.subText}>Experimental app, use at your own risk.<br/>Make sure to double check swaps before and after transactions.</p>
             <p>
-                <Link to="/">Batch Swap</Link>{' / '}
-                <Link to="/cancel-swaps">Batch Cancel</Link>{' / '}
-                <Link to="/transfer">Batch Send</Link>
+                <NavLink exact to="/" activeClassName="active">Batch Swap</NavLink>{' / '}
+                <NavLink exact to="/cancel-swaps" activeClassName="active">Batch Cancel</NavLink>{' / '}
+                <NavLink exact to="/transfer" activeClassName="active">Batch Send</NavLink>
             </p>
             <p>{!auth
                 ? <button onClick={sync}>Sync</button>
