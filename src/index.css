@@ -68,6 +68,12 @@ code, button, input, textarea {
   font-family: "Grafista-Regular", "American Typewriter", "Courier New", "Courier", monospace;
 }
 
+code {
+  background-color: hsl(227, 49%, 94%);
+  border-radius: 2px;
+  padding: 1px 3px;
+}
+
 .svg-inline--fa {
   position: relative;
   top: 3px;

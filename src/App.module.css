@@ -1,17 +1,36 @@
 .wrapper {
-  box-sizing: border-box;
-  padding: 40px;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
+    box-sizing: border-box;
+    padding: 40px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .heading {
-  font-size: 21px;
-  margin: 0 0 8px;
+    font-size: 21px;
+    margin: 0 0 8px;
 }
 
 .subText {
-  font-size: 16px;
-  margin: 0 0 12px;
+    font-size: 16px;
+    margin: 0 0 12px;
+}
+
+.headerBar {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 0 16px;
+}
+
+.headerBarColumn {
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+@media screen and (min-width: 764px) {
+    .headerBarColumn {
+        width: 50%;
+        padding: 0 8px;
+        margin: 0 -8px 16px;
+    }
 }

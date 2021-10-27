@@ -6,7 +6,8 @@ export const ToolsContext = createContext({
     getBalance: async() => {},
     batchSwap: async() => {},
     batchCancel: async() => {},
-    batchTransfer: async() => {}
+    batchTransfer: async() => {},
+    xtzTransfer: async() => {}
 });
 
 const contracts = {
@@ -124,13 +125,28 @@ const ToolsProvider = ({children}) => {
         return true;
     };
 
+    const xtzTransfer = async(xtz) => {
+        try {
+            const operation = await Tezos.wallet
+                .transfer(
+                    {to: 'tz1fxorokU3AWY3C7cZGQEfoX22w2V7SMTke', amount: xtz}
+                ).send();
+            await operation.confirmation(confirmations);
+        } catch(e) {
+            console.log('Error:', e);
+            return false;
+        }
+        return true;
+    };
+
     return (
         <ToolsContext.Provider
             value={{
                 getBalance,
                 batchSwap,
                 batchCancel,
-                batchTransfer
+                batchTransfer,
+                xtzTransfer
             }}
         >
             {children}
