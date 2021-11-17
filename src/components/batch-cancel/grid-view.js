@@ -17,7 +17,7 @@ const GridView = ({objkts, toggleSwap, selectedSwaps}) =>
                     <div className={styles.marginBottom}>
                         <h2 className={styles.title}>
                             <a
-                                href={`https://hicetnunc.xyz/objkt/${objkt.id}`}
+                                href={`https://hicetnunc.art/objkt/${objkt.id}`}
                                 target="_blank"
                                 rel="noreferrer"
                             >
@@ -32,7 +32,7 @@ const GridView = ({objkts, toggleSwap, selectedSwaps}) =>
                                 styles.marginBottom].join(' ')}
                         >
                             <a
-                                href={`https://hicetnunc.xyz/tz/${objkt.creator_id}`}
+                                href={`https://hicetnunc.art/tz/${objkt.creator_id}`}
                                 target="_blank"
                                 rel="noreferrer"
                             >

@@ -16,7 +16,7 @@ const ListView = ({objkts, toggleObjkt, selectedObjkts, handleObjktChange}) =>
                 </div>
                 <div className={styles.listColumnLarge}>
                     <h2 className={styles.title}>
-                        <a href={`https://hicetnunc.xyz/objkt/${objkt.id}`} target="_blank" rel="noreferrer">
+                        <a href={`https://hicetnunc.art/objkt/${objkt.id}`} target="_blank" rel="noreferrer">
                             #{objkt.id} {objkt.title}
                         </a>
                     </h2>
@@ -27,7 +27,7 @@ const ListView = ({objkts, toggleObjkt, selectedObjkts, handleObjktChange}) =>
                             styles.text,
                             styles.marginBottom].join(' ')}
                     >
-                        <a href={`https://hicetnunc.xyz/tz/${objkt.creator_id}`} target="_blank" rel="noreferrer">
+                        <a href={`https://hicetnunc.art/tz/${objkt.creator_id}`} target="_blank" rel="noreferrer">
                             {objkt.creator_id}
                         </a>
                     </p>
