@@ -62,6 +62,20 @@ const ToolsProvider = ({children}) => {
                                 .toTransferParams(
                                     {amount: 0, mutez: true, storageLimit: 270}
                                 )
+                        },
+                        {
+                            kind: OpKind.TRANSACTION,
+                            ...objkts.methods.update_operators([
+                                {
+                                    remove_operator: {
+                                        operator: contracts.v2,
+                                        token_id: parseFloat(o.id),
+                                        owner: auth.address
+                                    }
+                                }])
+                                .toTransferParams(
+                                    {amount: 0, mutez: true, storageLimit: 175}
+                                )
                         }
                     ]
                 , []);
