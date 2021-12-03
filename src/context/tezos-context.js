@@ -2,7 +2,7 @@ import {createContext, useEffect, useState} from 'react';
 import {TezosToolkit} from '@taquito/taquito';
 import {BeaconWallet} from '@taquito/beacon-wallet';
 
-const Tezos = new TezosToolkit('https://mainnet.smartpy.io');
+const Tezos = new TezosToolkit('https://mainnet.api.tez.ie');
 const wallet = new BeaconWallet({
     name: 'Order & Chaos Tools',
     preferredNetwork: 'mainnet'
@@ -10,7 +10,7 @@ const wallet = new BeaconWallet({
 // Todo: move network params to .env, use testnet for testing
 const network = {
     type: 'mainnet',
-    rpcUrl: 'https://mainnet.smartpy.io'
+    rpcUrl: 'https://mainnet.api.tez.ie'
 };
 Tezos.setWalletProvider(wallet);
 
