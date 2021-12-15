@@ -137,7 +137,10 @@ const BatchTransfer = () => {
                         objkt: data.objkt,
                         recipients: data.recipients.length ? (
                             [
-                                data.recipients[0] = values,
+                                data.recipients[0] = {
+                                    ...data.recipients[0],
+                                    ...values
+                                },
                                 ...data.recipients.splice(1)
                             ]
                         ) : []
