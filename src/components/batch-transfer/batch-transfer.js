@@ -129,18 +129,27 @@ const BatchTransfer = () => {
 
     const handleOverrideSubmit = (values) => {
         setDefaultValues(prevState => ({...prevState, ...values}));
-        setSelectedObjkts(prevState => (Object
-            .entries(prevState)
-            .reduce((obj, [k, v]) => (obj[k] = {...v, ...values}, obj), {})));
+        setSelectedObjkts(
+            prevState => Object.entries(prevState).reduce((obj, [id, data]) => {
+                return {
+                    ...obj,
+                    [id]: {
+                        objkt: data.objkt,
+                        recipients: data.recipients.length ? (
+                            [
+                                data.recipients[0] = values,
+                                ...data.recipients.splice(1)
+                            ]
+                        ) : []
+                    }
+                };
+            }, {}));
     };
 
     const handleObjktChange = (type, objktId, i) => (event) => {
         setSelectedObjkts(prevState => {
             const result = {...prevState};
-            console.log('RE', result);
-            console.log('objktId', objktId)
             result[objktId].recipients[i][type] = event.target.value;
-            console.log('R', result)
             return result;
         });
     };
@@ -250,7 +259,8 @@ const BatchTransfer = () => {
                                         </>
                                         <td>
                                             <button
-                                                onClick={deleteRecipient(so.objkt)}
+                                                onClick={deleteRecipient(
+                                                    so.objkt)}
                                             >
                                                 X
                                             </button>
