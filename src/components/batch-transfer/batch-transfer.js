@@ -91,13 +91,8 @@ const BatchTransfer = () => {
         });
     };
 
-    useEffect(() => {
-        console.log(selectedObjkts);
-    }, [selectedObjkts]);
-
     const handleBatchTransfer = async() => {
         setTransactionStatus('Transaction in progress…');
-        console.log('sos', Object.values(selectedObjkts));
         const data = Object.values(selectedObjkts).reduce((arr, so) => {
                 return (
                     [
@@ -112,7 +107,6 @@ const BatchTransfer = () => {
             },
             []
         );
-        console.log('data', data);
         setSelectedObjkts({});
         setShowSummary(false);
         const isSuccessful = await batchTransfer(data);
