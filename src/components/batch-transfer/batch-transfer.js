@@ -42,20 +42,79 @@ const BatchTransfer = () => {
 
         setSelectedObjkts(prevState => ({
             ...prevState,
-            [objkt.id]: {objkt, ...defaultValues}
+            [objkt.id]: {objkt, recipients: [{...defaultValues}]}
         }));
     };
 
+    const deleteRecipient = (objkt, i) => () => {
+        if(objkt.id in selectedObjkts) {
+            selectedObjkts[objkt.id].recipients.splice(i, 1);
+            if(!selectedObjkts[objkt.id].recipients)
+                delete selectedObjkts[objkt.id];
+            setSelectedObjkts({...selectedObjkts});
+            return;
+        }
+
+        setSelectedObjkts(prevState => ({
+            ...prevState,
+            [objkt.id]: {objkt, recipients: [{...defaultValues}]}
+        }));
+    };
+
+    const handleAddRecipient = (selectedObjkt) => () => {
+        setSelectedObjkts(prevState => ({
+            ...prevState,
+            [selectedObjkt.id]: {
+                ...prevState[selectedObjkt.id],
+                recipients: [
+                    ...prevState[selectedObjkt.id].recipients,
+                    {
+                        address: '',
+                        amount: 1
+                    }
+                ]
+            }
+        }));
+    };
+
+    const handleRemoveRecipient = (selectedObjkt, i) => () => {
+        setSelectedObjkts(prevState => {
+            const recipients = [...prevState[selectedObjkt.id].recipients];
+            recipients.splice(i, 1);
+            return ({
+                ...prevState,
+                [selectedObjkt.id]: {
+                    ...prevState[selectedObjkt.id],
+                    recipients
+                }
+            });
+        });
+    };
+
+    useEffect(() => {
+        console.log(selectedObjkts);
+    }, [selectedObjkts]);
+
     const handleBatchTransfer = async() => {
         setTransactionStatus('Transaction in progress…');
-        const data = Object.values(selectedObjkts).map(so => ({
-            id: so.objkt.id,
-            address: so.address,
-            amount: Number(so.amount)
-        }));
+        console.log('sos', Object.values(selectedObjkts));
+        const data = Object.values(selectedObjkts).reduce((arr, so) => {
+                return (
+                    [
+                        ...arr,
+                        ...so.recipients.map(r => ({
+                            id: so.objkt.id,
+                            address: r.address,
+                            amount: Number(r.amount)
+                        }))
+                    ]
+                );
+            },
+            []
+        );
+        console.log('data', data);
         setSelectedObjkts({});
         setShowSummary(false);
-        console.log(data);
         const isSuccessful = await batchTransfer(data);
 
         setTransactionStatus(isSuccessful ? 'Objkts Sent' : 'Failed');
@@ -75,10 +134,13 @@ const BatchTransfer = () => {
             .reduce((obj, [k, v]) => (obj[k] = {...v, ...values}, obj), {})));
     };
 
-    const handleObjktChange = (type, objkt) => (event) => {
+    const handleObjktChange = (type, objktId, i) => (event) => {
         setSelectedObjkts(prevState => {
             const result = {...prevState};
-            result[objkt.id][type] = event.target.value;
+            console.log('RE', result);
+            console.log('objktId', objktId)
+            result[objktId].recipients[i][type] = event.target.value;
+            console.log('R', result)
             return result;
         });
     };
@@ -153,12 +215,16 @@ const BatchTransfer = () => {
                     toggleObjkt={toggleObjkt}
                     selectedObjkts={selectedObjkts}
                     handleObjktChange={handleObjktChange}
+                    handleAddRecipient={handleAddRecipient}
+                    handleRemoveRecipient={handleRemoveRecipient}
                 />}
                 {viewType === 'list' && <ListView
                     objkts={objkts}
                     toggleObjkt={toggleObjkt}
                     selectedObjkts={selectedObjkts}
                     handleObjktChange={handleObjktChange}
+                    handleAddRecipient={handleAddRecipient}
+                    handleRemoveRecipient={handleRemoveRecipient}
                 />}
             </div>
             {showSummary && (
@@ -174,18 +240,23 @@ const BatchTransfer = () => {
                             </thead>
                             <tbody>
                             {Object.values(selectedObjkts).map(so => (
-                                <tr key={so.objkt.id}>
-                                    <th>{so.objkt.title}</th>
-                                    <td>{so.amount}</td>
-                                    <td>{so.address.slice(0,
-                                        5)}…{so.address.slice(-5)}</td>
-                                    <td>
-                                        <button onClick={toggleObjkt(so.objkt)}>
-                                            X
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
+                                so.recipients.map(r => (
+                                    <tr key={`${so.objkt.id}_${r.address}`}>
+                                        <th>{so.objkt.title}</th>
+                                        <>
+                                            <td>{r.amount}</td>
+                                            <td>{r.address.slice(0,
+                                                5)}…{r.address.slice(-5)}</td>
+                                        </>
+                                        <td>
+                                            <button
+                                                onClick={deleteRecipient(so.objkt)}
+                                            >
+                                                X
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))))}
                             </tbody>
                         </table>
                     </div>

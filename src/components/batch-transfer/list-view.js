@@ -1,7 +1,13 @@
 import styles from './batch-transfer.module.css';
 
-
-const ListView = ({objkts, toggleObjkt, selectedObjkts, handleObjktChange}) =>
+const ListView = ({
+                      objkts,
+                      toggleObjkt,
+                      selectedObjkts,
+                      handleObjktChange,
+                      handleAddRecipient,
+                      handleRemoveRecipient
+                  }) =>
     <div className={styles.list}>
         {objkts && objkts.map(objkt => (
             <div key={objkt.id} className={styles.row}>
@@ -16,7 +22,11 @@ const ListView = ({objkts, toggleObjkt, selectedObjkts, handleObjktChange}) =>
                 </div>
                 <div className={styles.listColumnLarge}>
                     <h2 className={styles.title}>
-                        <a href={`https://hicetnunc.art/objkt/${objkt.id}`} target="_blank" rel="noreferrer">
+                        <a
+                            href={`https://hicetnunc.art/objkt/${objkt.id}`}
+                            target="_blank"
+                            rel="noreferrer"
+                        >
                             #{objkt.id} {objkt.title}
                         </a>
                     </h2>
@@ -27,7 +37,11 @@ const ListView = ({objkts, toggleObjkt, selectedObjkts, handleObjktChange}) =>
                             styles.text,
                             styles.marginBottom].join(' ')}
                     >
-                        <a href={`https://hicetnunc.art/tz/${objkt.creator_id}`} target="_blank" rel="noreferrer">
+                        <a
+                            href={`https://hicetnunc.art/tz/${objkt.creator_id}`}
+                            target="_blank"
+                            rel="noreferrer"
+                        >
                             {objkt.creator_id}
                         </a>
                     </p>
@@ -39,29 +53,65 @@ const ListView = ({objkts, toggleObjkt, selectedObjkts, handleObjktChange}) =>
                             styles.marginBottom].join(' ')}
                     >Available {objkt.totalPossessed}</p>
                 </div>
-                {objkt.id in selectedObjkts && <>
-                    <div className={styles.listColumn}>
-                        <label htmlFor={`${objkt.id}Address`}>Address</label>
-                        <input
-                            id={`${objkt.id}Address`}
-                            value={selectedObjkts?.[objkt.id].address}
-                            onChange={handleObjktChange('address', objkt)}
-                        />
-                    </div>
-                    <div className={styles.listColumn}>
-                        <label htmlFor={`${objkt.id}Amount`}>Amount</label>
-                        <input
-                            id={`${objkt.id}Amount`}
-                            type="number"
-                            min={1}
-                            max={objkt.totalPossessed}
-                            value={selectedObjkts?.[objkt.id].amount}
-                            onChange={handleObjktChange('amount',
-                                objkt)}
-                        />
-                    </div>
-                </>
-                }
+                <div>
+                    {objkt.id in selectedObjkts &&
+                    selectedObjkts
+                        ?.[objkt.id]
+                        .recipients
+                        .map((r, i) => (
+                            <div key={`selectedObjkt${objkt.id}${i}`}>
+                                <p>
+                                    <label htmlFor={`${objkt.id}Address${i}`}>Address</label>
+                                    <input
+                                        id={`${objkt.id}Address${i}`}
+                                        value={r.address}
+                                        onChange={handleObjktChange(
+                                            'address',
+                                            objkt.id,
+                                            i
+                                        )}
+                                    />
+                                </p>
+                                <p>
+                                    <label htmlFor={`${objkt.id}Amount${i}`}>Amount</label>
+                                    <input
+                                        id={`${objkt.id}Amount`}
+                                        type="number"
+                                        min={1}
+                                        max={objkt.totalPossessed}
+                                        value={r.amount}
+                                        onChange={handleObjktChange(
+                                            'amount',
+                                            objkt.id,
+                                            i
+                                        )}
+                                    />
+                                </p>
+                                {i > 0
+                                    ? (
+                                        <p>
+                                            <button
+                                                onClick={handleRemoveRecipient(
+                                                    objkt,
+                                                    i
+                                                )}
+                                            >-
+                                            </button>
+                                        </p>
+                                    ) : null}
+                            </div>
+                        ))}
+                    {objkt.id in selectedObjkts &&
+                    selectedObjkts?.[objkt.id].recipients.length <
+                    objkt.totalPossessed && (
+                        <p>
+                            <button
+                                onClick={handleAddRecipient(objkt)}
+                            >+
+                            </button>
+                        </p>
+                    )}
+                </div>
                 <div className={styles.marginLeftAuto}>
                     <p>
                         <button onClick={toggleObjkt(objkt)}>{

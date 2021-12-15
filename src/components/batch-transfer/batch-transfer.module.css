@@ -1,5 +1,4 @@
 
-
 .grid {
     display: flex;
     flex-wrap: wrap;
@@ -84,7 +83,7 @@
     opacity: 1;
 }
 
-.hide{
+.hide {
     opacity: 0.5;
 }
 
