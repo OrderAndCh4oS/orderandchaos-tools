@@ -32,6 +32,8 @@ const query = gql`
                 price
                 amount_left
                 creator_id
+                contract_address
+                contract_version
             }
             trades {
                 timestamp

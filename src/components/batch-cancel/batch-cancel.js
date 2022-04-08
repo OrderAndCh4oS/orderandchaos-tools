@@ -9,7 +9,9 @@ import useView from '../../hooks/use-view';
 import useObjkts from '../../hooks/use-objkts';
 import UtilityMenu from '../utility-menu/utility-menu';
 import getSwappedObjktsByWallet from '../../api/get-swapped-objkts-by-wallet';
-import getSwappableObjktsByWallet, {priceToXtz} from '../../api/get-swappable-objkts-by-wallet';
+import getSwappableObjktsByWallet, {
+    priceToXtz
+} from '../../api/get-swappable-objkts-by-wallet';
 
 const BatchCancel = () => {
     const {auth} = useTezos();
@@ -43,7 +45,7 @@ const BatchCancel = () => {
 
     const handleBatchCancel = async() => {
         setTransactionStatus('Transaction in progress…');
-        const cancelData = Object.values(selectedSwaps).map(so => so.swap.id);
+        const cancelData = Object.values(selectedSwaps).map(so => ({contract: so.swap.contract_address, swapId: so.swap.id}));
         setSelectedSwaps({});
         setShowSummary(false);
         const isSuccessful = await batchCancel(cancelData);
@@ -67,6 +69,17 @@ const BatchCancel = () => {
 
     const handleCloseToast = () => {
         setTransactionStatus(null);
+    };
+
+    const getContract = contract_address => {
+        if(contract_address === 'KT1PHubm9HtyQEJ4BBpMTVomq6mhbfNZ9z5w')
+            return 'Teia';
+        if(contract_address === 'KT1HbQepzV1nVGg8QVznG7z4RcHseD5kwqBn')
+            return 'Hic et Nunc v2';
+        if(contract_address === 'KT1Hkg5qeNhfwpKW4fXvq7HGZB9z2EnmCCA9')
+            return 'Hic et Nunc v1 (this will fail)';
+
+        return 'Unknown';
     };
 
     useEffect(() => {
@@ -105,6 +118,7 @@ const BatchCancel = () => {
                                 <th>Title</th>
                                 <th>Amount</th>
                                 <th>Price</th>
+                                <th>Contract</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -113,10 +127,13 @@ const BatchCancel = () => {
                                     <th>{s.objkt.title}</th>
                                     <th>{s.swap.amount_left}</th>
                                     <th>{priceToXtz(s.swap.price)}ꜩ</th>
+                                    <th>{getContract(
+                                        s.swap.contract_address)}</th>
                                     <td>
                                         <button
                                             onClick={toggleSwap(s)}
-                                        >X</button>
+                                        >X
+                                        </button>
                                     </td>
                                 </tr>
                             ))}

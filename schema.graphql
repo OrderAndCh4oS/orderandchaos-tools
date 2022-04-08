@@ -5,6 +5,14 @@ schema {
     subscription: subscription_root
 }
 
+"whether this query should be cached (Hasura Cloud only)"
+directive @cached(
+    "refresh the cache entry"
+    refresh: Boolean! = false,
+    "measured in seconds"
+    ttl: Int! = 60
+) on QUERY
+
 "columns and relationships of \"hic_et_nunc.ask\""
 type hic_et_nunc_ask {
     amount: bigint!
@@ -374,13 +382,7 @@ type hic_et_nunc_bid_variance_fields {
     update_level: Float
 }
 
-"""
-
-Stores current level of index and hash of it's config
-
-
-columns and relationships of "hic_et_nunc.dipdup_state"
-"""
+"Stores current level of index and hash of it's config"
 type hic_et_nunc_dipdup_state {
     hash: String
     index_hash: String!
@@ -1128,6 +1130,32 @@ type hic_et_nunc_fa2 {
         "filter the rows returned"
         where: hic_et_nunc_english_auction_bool_exp
     ): hic_et_nunc_english_auction_aggregate!
+    "An array relationship"
+    swaps(
+        "distinct select on columns"
+        distinct_on: [hic_et_nunc_swap_select_column!],
+        "limit the number of rows returned"
+        limit: Int,
+        "skip the first n rows. Use only with order_by"
+        offset: Int,
+        "sort the rows by one or more columns"
+        order_by: [hic_et_nunc_swap_order_by!],
+        "filter the rows returned"
+        where: hic_et_nunc_swap_bool_exp
+    ): [hic_et_nunc_swap!]!
+    "An aggregate relationship"
+    swaps_aggregate(
+        "distinct select on columns"
+        distinct_on: [hic_et_nunc_swap_select_column!],
+        "limit the number of rows returned"
+        limit: Int,
+        "skip the first n rows. Use only with order_by"
+        offset: Int,
+        "sort the rows by one or more columns"
+        order_by: [hic_et_nunc_swap_order_by!],
+        "filter the rows returned"
+        where: hic_et_nunc_swap_bool_exp
+    ): hic_et_nunc_swap_aggregate!
 }
 
 "aggregated selection of \"hic_et_nunc.fa2\""
@@ -2160,7 +2188,7 @@ type hic_et_nunc_split_signatures_variance_fields {
 
 "columns and relationships of \"hic_et_nunc.splitcontract\""
 type hic_et_nunc_splitcontract {
-    administrator: String
+    administrator: String!
     "An object relationship"
     contract: hic_et_nunc_holder!
     contract_id: String!
@@ -2191,7 +2219,7 @@ type hic_et_nunc_splitcontract {
         "filter the rows returned"
         where: hic_et_nunc_shareholder_bool_exp
     ): hic_et_nunc_shareholder_aggregate!
-    total_shares: bigint
+    total_shares: bigint!
 }
 
 "aggregated selection of \"hic_et_nunc.splitcontract\""
@@ -2283,14 +2311,19 @@ type hic_et_nunc_splitcontract_variance_fields {
 type hic_et_nunc_swap {
     amount: smallint!
     amount_left: smallint!
+    contract_address: String!
     contract_version: smallint!
     "An object relationship"
     creator: hic_et_nunc_holder!
     creator_id: String!
+    "An object relationship"
+    fa2: hic_et_nunc_fa2!
+    fa2_id: String!
     id: bigint!
     is_valid: Boolean!
     level: bigint!
     ophash: String!
+    opid: bigint!
     price: bigint!
     royalties: smallint!
     "ACTIVE: 0\\nFINISHED: 1\\nCANCELED: 2"
@@ -2355,6 +2388,7 @@ type hic_et_nunc_swap_avg_fields {
     contract_version: Float
     id: Float
     level: Float
+    opid: Float
     price: Float
     royalties: Float
     "ACTIVE: 0\\nFINISHED: 1\\nCANCELED: 2"
@@ -2366,11 +2400,14 @@ type hic_et_nunc_swap_avg_fields {
 type hic_et_nunc_swap_max_fields {
     amount: smallint
     amount_left: smallint
+    contract_address: String
     contract_version: smallint
     creator_id: String
+    fa2_id: String
     id: bigint
     level: bigint
     ophash: String
+    opid: bigint
     price: bigint
     royalties: smallint
     "ACTIVE: 0\\nFINISHED: 1\\nCANCELED: 2"
@@ -2383,11 +2420,14 @@ type hic_et_nunc_swap_max_fields {
 type hic_et_nunc_swap_min_fields {
     amount: smallint
     amount_left: smallint
+    contract_address: String
     contract_version: smallint
     creator_id: String
+    fa2_id: String
     id: bigint
     level: bigint
     ophash: String
+    opid: bigint
     price: bigint
     royalties: smallint
     "ACTIVE: 0\\nFINISHED: 1\\nCANCELED: 2"
@@ -2403,6 +2443,7 @@ type hic_et_nunc_swap_stddev_fields {
     contract_version: Float
     id: Float
     level: Float
+    opid: Float
     price: Float
     royalties: Float
     "ACTIVE: 0\\nFINISHED: 1\\nCANCELED: 2"
@@ -2417,6 +2458,7 @@ type hic_et_nunc_swap_stddev_pop_fields {
     contract_version: Float
     id: Float
     level: Float
+    opid: Float
     price: Float
     royalties: Float
     "ACTIVE: 0\\nFINISHED: 1\\nCANCELED: 2"
@@ -2431,6 +2473,7 @@ type hic_et_nunc_swap_stddev_samp_fields {
     contract_version: Float
     id: Float
     level: Float
+    opid: Float
     price: Float
     royalties: Float
     "ACTIVE: 0\\nFINISHED: 1\\nCANCELED: 2"
@@ -2445,6 +2488,7 @@ type hic_et_nunc_swap_sum_fields {
     contract_version: smallint
     id: bigint
     level: bigint
+    opid: bigint
     price: bigint
     royalties: smallint
     "ACTIVE: 0\\nFINISHED: 1\\nCANCELED: 2"
@@ -2459,6 +2503,7 @@ type hic_et_nunc_swap_var_pop_fields {
     contract_version: Float
     id: Float
     level: Float
+    opid: Float
     price: Float
     royalties: Float
     "ACTIVE: 0\\nFINISHED: 1\\nCANCELED: 2"
@@ -2473,6 +2518,7 @@ type hic_et_nunc_swap_var_samp_fields {
     contract_version: Float
     id: Float
     level: Float
+    opid: Float
     price: Float
     royalties: Float
     "ACTIVE: 0\\nFINISHED: 1\\nCANCELED: 2"
@@ -2487,6 +2533,7 @@ type hic_et_nunc_swap_variance_fields {
     contract_version: Float
     id: Float
     level: Float
+    opid: Float
     price: Float
     royalties: Float
     "ACTIVE: 0\\nFINISHED: 1\\nCANCELED: 2"
@@ -3728,7 +3775,7 @@ type query_root {
         where: hic_et_nunc_swap_bool_exp
     ): hic_et_nunc_swap_aggregate!
     "fetch data from the table: \"hic_et_nunc.swap\" using primary key columns"
-    hic_et_nunc_swap_by_pk(id: bigint!): hic_et_nunc_swap
+    hic_et_nunc_swap_by_pk(opid: bigint!): hic_et_nunc_swap
     "fetch data from the table: \"hic_et_nunc.tag\""
     hic_et_nunc_tag(
         "distinct select on columns"
@@ -4263,7 +4310,7 @@ type subscription_root {
         where: hic_et_nunc_swap_bool_exp
     ): hic_et_nunc_swap_aggregate!
     "fetch data from the table: \"hic_et_nunc.swap\" using primary key columns"
-    hic_et_nunc_swap_by_pk(id: bigint!): hic_et_nunc_swap
+    hic_et_nunc_swap_by_pk(opid: bigint!): hic_et_nunc_swap
     "fetch data from the table: \"hic_et_nunc.tag\""
     hic_et_nunc_tag(
         "distinct select on columns"
@@ -4695,9 +4742,13 @@ enum hic_et_nunc_swap_select_column {
     "column name"
     amount_left
     "column name"
+    contract_address
+    "column name"
     contract_version
     "column name"
     creator_id
+    "column name"
+    fa2_id
     "column name"
     id
     "column name"
@@ -4706,6 +4757,8 @@ enum hic_et_nunc_swap_select_column {
     level
     "column name"
     ophash
+    "column name"
+    opid
     "column name"
     price
     "column name"
@@ -4835,6 +4888,14 @@ enum order_by {
     "in descending order, nulls last"
     desc_nulls_last
 }
+
+scalar bigint
+
+scalar jsonb
+
+scalar smallint
+
+scalar timestamptz
 
 "Boolean expression to compare columns of type \"Boolean\". All fields are combined with logical 'AND'."
 input Boolean_comparison_exp {
@@ -5881,6 +5942,7 @@ input hic_et_nunc_fa2_bool_exp {
     contract: String_comparison_exp
     dutch_auctions: hic_et_nunc_dutch_auction_bool_exp
     english_auctions: hic_et_nunc_english_auction_bool_exp
+    swaps: hic_et_nunc_swap_bool_exp
 }
 
 "Ordering options when selecting data from \"hic_et_nunc.fa2\"."
@@ -5890,6 +5952,7 @@ input hic_et_nunc_fa2_order_by {
     contract: order_by
     dutch_auctions_aggregate: hic_et_nunc_dutch_auction_aggregate_order_by
     english_auctions_aggregate: hic_et_nunc_english_auction_aggregate_order_by
+    swaps_aggregate: hic_et_nunc_swap_aggregate_order_by
 }
 
 "order by aggregate values of table \"hic_et_nunc.fulfilled_ask\""
@@ -6443,6 +6506,7 @@ input hic_et_nunc_swap_avg_order_by {
     contract_version: order_by
     id: order_by
     level: order_by
+    opid: order_by
     price: order_by
     royalties: order_by
     "ACTIVE: 0\\nFINISHED: 1\\nCANCELED: 2"
@@ -6457,13 +6521,17 @@ input hic_et_nunc_swap_bool_exp {
     _or: [hic_et_nunc_swap_bool_exp!]
     amount: smallint_comparison_exp
     amount_left: smallint_comparison_exp
+    contract_address: String_comparison_exp
     contract_version: smallint_comparison_exp
     creator: hic_et_nunc_holder_bool_exp
     creator_id: String_comparison_exp
+    fa2: hic_et_nunc_fa2_bool_exp
+    fa2_id: String_comparison_exp
     id: bigint_comparison_exp
     is_valid: Boolean_comparison_exp
     level: bigint_comparison_exp
     ophash: String_comparison_exp
+    opid: bigint_comparison_exp
     price: bigint_comparison_exp
     royalties: smallint_comparison_exp
     status: smallint_comparison_exp
@@ -6477,11 +6545,14 @@ input hic_et_nunc_swap_bool_exp {
 input hic_et_nunc_swap_max_order_by {
     amount: order_by
     amount_left: order_by
+    contract_address: order_by
     contract_version: order_by
     creator_id: order_by
+    fa2_id: order_by
     id: order_by
     level: order_by
     ophash: order_by
+    opid: order_by
     price: order_by
     royalties: order_by
     "ACTIVE: 0\\nFINISHED: 1\\nCANCELED: 2"
@@ -6494,11 +6565,14 @@ input hic_et_nunc_swap_max_order_by {
 input hic_et_nunc_swap_min_order_by {
     amount: order_by
     amount_left: order_by
+    contract_address: order_by
     contract_version: order_by
     creator_id: order_by
+    fa2_id: order_by
     id: order_by
     level: order_by
     ophash: order_by
+    opid: order_by
     price: order_by
     royalties: order_by
     "ACTIVE: 0\\nFINISHED: 1\\nCANCELED: 2"
@@ -6511,13 +6585,17 @@ input hic_et_nunc_swap_min_order_by {
 input hic_et_nunc_swap_order_by {
     amount: order_by
     amount_left: order_by
+    contract_address: order_by
     contract_version: order_by
     creator: hic_et_nunc_holder_order_by
     creator_id: order_by
+    fa2: hic_et_nunc_fa2_order_by
+    fa2_id: order_by
     id: order_by
     is_valid: order_by
     level: order_by
     ophash: order_by
+    opid: order_by
     price: order_by
     royalties: order_by
     status: order_by
@@ -6534,6 +6612,7 @@ input hic_et_nunc_swap_stddev_order_by {
     contract_version: order_by
     id: order_by
     level: order_by
+    opid: order_by
     price: order_by
     royalties: order_by
     "ACTIVE: 0\\nFINISHED: 1\\nCANCELED: 2"
@@ -6548,6 +6627,7 @@ input hic_et_nunc_swap_stddev_pop_order_by {
     contract_version: order_by
     id: order_by
     level: order_by
+    opid: order_by
     price: order_by
     royalties: order_by
     "ACTIVE: 0\\nFINISHED: 1\\nCANCELED: 2"
@@ -6562,6 +6642,7 @@ input hic_et_nunc_swap_stddev_samp_order_by {
     contract_version: order_by
     id: order_by
     level: order_by
+    opid: order_by
     price: order_by
     royalties: order_by
     "ACTIVE: 0\\nFINISHED: 1\\nCANCELED: 2"
@@ -6576,6 +6657,7 @@ input hic_et_nunc_swap_sum_order_by {
     contract_version: order_by
     id: order_by
     level: order_by
+    opid: order_by
     price: order_by
     royalties: order_by
     "ACTIVE: 0\\nFINISHED: 1\\nCANCELED: 2"
@@ -6590,6 +6672,7 @@ input hic_et_nunc_swap_var_pop_order_by {
     contract_version: order_by
     id: order_by
     level: order_by
+    opid: order_by
     price: order_by
     royalties: order_by
     "ACTIVE: 0\\nFINISHED: 1\\nCANCELED: 2"
@@ -6604,6 +6687,7 @@ input hic_et_nunc_swap_var_samp_order_by {
     contract_version: order_by
     id: order_by
     level: order_by
+    opid: order_by
     price: order_by
     royalties: order_by
     "ACTIVE: 0\\nFINISHED: 1\\nCANCELED: 2"
@@ -6618,6 +6702,7 @@ input hic_et_nunc_swap_variance_order_by {
     contract_version: order_by
     id: order_by
     level: order_by
+    opid: order_by
     price: order_by
     royalties: order_by
     "ACTIVE: 0\\nFINISHED: 1\\nCANCELED: 2"
@@ -7350,12 +7435,3 @@ input timestamptz_comparison_exp {
     _neq: timestamptz
     _nin: [timestamptz!]
 }
-
-
-scalar bigint
-
-scalar jsonb
-
-scalar smallint
-
-scalar timestamptz
