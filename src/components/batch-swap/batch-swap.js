@@ -146,7 +146,7 @@ const BatchSwap = () => {
                 <p className={styles.field}>
                     <button
                         onClick={handleShowSummary}
-                    >Swap
+                    >Swap on Teia
                     </button>
                 </p>
                 {viewType === 'grid' && <GridView

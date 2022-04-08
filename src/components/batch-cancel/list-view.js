@@ -17,7 +17,7 @@ const ListView = ({objkts, toggleSwap, selectedSwaps}) =>
                 <div className={styles.listColumnLarge}>
                     <h2 className={styles.title}>
                         <a
-                            href={`https://hicetnunc.art/objkt/${objkt.id}`}
+                            href={`https://teia.art/objkt/${objkt.id}`}
                             target="_blank"
                             rel="noreferrer"
                         >
@@ -32,7 +32,7 @@ const ListView = ({objkts, toggleSwap, selectedSwaps}) =>
                             styles.marginBottom].join(' ')}
                     >
                         <a
-                            href={`https://hicetnunc.art/tz/${objkt.creator_id}`}
+                            href={`https://teia.art/tz/${objkt.creator_id}`}
                             target="_blank"
                             rel="noreferrer"
                         >

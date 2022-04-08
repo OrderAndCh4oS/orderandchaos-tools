@@ -14,6 +14,7 @@ const contracts = {
     subjkt: 'KT1My1wDZHDGweCrJnQJi3wcFaS67iksirvj',
     v1: 'KT1Hkg5qeNhfwpKW4fXvq7HGZB9z2EnmCCA9',
     v2: 'KT1HbQepzV1nVGg8QVznG7z4RcHseD5kwqBn',
+    teia: 'KT1PHubm9HtyQEJ4BBpMTVomq6mhbfNZ9z5w',
     objkts: 'KT1RJ6PbjHpwc3M5rw5s2Nbmefwbuwbdxton'
 };
 
@@ -57,7 +58,7 @@ const ToolsProvider = ({children}) => {
                                 parseInt(o.amount),
                                 parseInt(o.id),
                                 parseFloat(o.royalties),
-                                parseFloat(o.xtz) * 1000000
+                                Math.round(parseFloat(o.xtz) * 1000000)
                             )
                                 .toTransferParams(
                                     {amount: 0, mutez: true, storageLimit: 270}
@@ -69,6 +70,69 @@ const ToolsProvider = ({children}) => {
                                 {
                                     remove_operator: {
                                         operator: contracts.v2,
+                                        token_id: parseFloat(o.id),
+                                        owner: auth.address
+                                    }
+                                }])
+                                .toTransferParams(
+                                    {amount: 0, mutez: true, storageLimit: 175}
+                                )
+                        }
+                    ]
+                , []);
+            const batch = await Tezos.wallet.batch(list);
+            const operation = await batch.send();
+            await operation.confirmation(confirmations);
+        } catch(e) {
+            console.log('Error:', e);
+            return false;
+        }
+        return true;
+    };
+
+    const batchSwapTeia = async(objktsToSwap) => {
+        try {
+            const objktsAddress = 'KT1RJ6PbjHpwc3M5rw5s2Nbmefwbuwbdxton';
+            const objkts = await Tezos.wallet.at(contracts.objkts);
+            const marketplace = await Tezos.wallet.at(contracts.teia);
+
+            const list = objktsToSwap.reduce((arr, o) =>
+                    [
+                        ...arr,
+                        {
+                            kind: OpKind.TRANSACTION,
+                            ...objkts.methods.update_operators([
+                                {
+                                    add_operator: {
+                                        operator: contracts.teia,
+                                        token_id: parseInt(o.id),
+                                        owner: auth.address
+                                    }
+                                }])
+                                .toTransferParams(
+                                    {amount: 0, mutez: true, storageLimit: 100}
+                                )
+                        },
+                        {
+                            kind: OpKind.TRANSACTION,
+                            ...marketplace.methods.swap(
+                                objktsAddress,
+                                parseInt(o.id),
+                                parseInt(o.amount),
+                                Math.round(parseFloat(o.xtz) * 1000000),
+                                parseFloat(o.royalties),
+                                o.creator,
+                            )
+                                .toTransferParams(
+                                    {amount: 0, mutez: true, storageLimit: 300}
+                                )
+                        },
+                        {
+                            kind: OpKind.TRANSACTION,
+                            ...objkts.methods.update_operators([
+                                {
+                                    remove_operator: {
+                                        operator: contracts.teia,
                                         token_id: parseFloat(o.id),
                                         owner: auth.address
                                     }
@@ -157,7 +221,7 @@ const ToolsProvider = ({children}) => {
         <ToolsContext.Provider
             value={{
                 getBalance,
-                batchSwap,
+                batchSwap: batchSwapTeia,
                 batchCancel,
                 batchTransfer,
                 xtzTransfer

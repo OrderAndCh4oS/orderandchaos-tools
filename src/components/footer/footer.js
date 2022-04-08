@@ -118,13 +118,13 @@ const Footer = () =>
         <p>Gallery: <a href="https://orderandchaos.xyz">orderandchaos.xyz</a></p>
         <p>Hic et Nunc:
             <br/>
-            <a href="https://www.hicetnunc.xyz/tz/tz1VgpmwW66LCbskjudK54Zp96vKn2cHjpGN">tz1Vg...HjpGN</a>
+            <a href="https://teia.art/tz/tz1VgpmwW66LCbskjudK54Zp96vKn2cHjpGN">tz1Vg...HjpGN</a>
             <br/>
-            <a href="https://www.hicetnunc.xyz/tz/tz1KySTBB8RXWVraggfXWLaLR9H3K3JBEbgt">tz1Ky...BEbgt</a>
+            <a href="https://teia.art/tz/tz1KySTBB8RXWVraggfXWLaLR9H3K3JBEbgt">tz1Ky...BEbgt</a>
             <br/>
-            <a href="https://www.hicetnunc.xyz/tz/tz1dAcFB4ApJmwvWxWfZBMgU9omabrjx4gWn">tz1dA...x4gWn</a>
+            <a href="https://teia.art/tz/tz1dAcFB4ApJmwvWxWfZBMgU9omabrjx4gWn">tz1dA...x4gWn</a>
             <br/>
-            <a href="https://www.hicetnunc.xyz/tz/tz1iM7PB4brTmkbTUccsrXYjepSQ6ext7KYu">tz1iM...t7KYu</a>
+            <a href="https://teia.art/tz/tz1iM7PB4brTmkbTUccsrXYjepSQ6ext7KYu">tz1iM...t7KYu</a>
         </p>
         <p>
             View on GitHub <a href='https://github.com/OrderAndCh4oS/hicetnunc-batch-swapper'>https://github.com/OrderAndCh4oS/hicetnunc-batch-swapper</a>
