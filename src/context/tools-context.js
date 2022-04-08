@@ -89,7 +89,7 @@ const ToolsProvider = ({children}) => {
     //     }
     //     return true;
     // };
-g
+
     const batchSwapTeia = async(objktsToSwap) => {
         try {
             const objktsAddress = 'KT1RJ6PbjHpwc3M5rw5s2Nbmefwbuwbdxton';
