@@ -1,4 +1,4 @@
-# Hic et Nunc Order & Chaos Tools
+# Order & Chaos Tools
 
 [tools.orderandchaos.xyz](https://tools.orderandchaos.xyz)
 
