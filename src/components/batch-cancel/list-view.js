@@ -10,7 +10,7 @@ const ListView = ({objkts, toggleSwap, selectedSwaps}) =>
                         alt={objkt.title}
                         loading="lazy"
                         className={styles.listImg}
-                        src={`https://orderandchaos.mypinata.cloud/ipfs/${objkt.display_uri.slice(
+                        src={`https://ipfs.io/ipfs/${objkt.display_uri.slice(
                             7)}`}
                     />
                 </div>

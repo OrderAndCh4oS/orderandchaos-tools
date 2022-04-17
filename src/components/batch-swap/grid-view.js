@@ -10,7 +10,7 @@ const GridView = ({objkts, toggleObjkt, selectedObjkts, handleObjktChange}) =>
                             alt={objkt.title}
                             loading="lazy"
                             className={styles.img}
-                            src={`https://orderandchaos.mypinata.cloud/ipfs/${objkt.display_uri.slice(7)}`}
+                            src={`https://ipfs.io/ipfs/${objkt.display_uri.slice(7)}`}
                         />
                     </div>
                     <div className={styles.objktInfo}>
