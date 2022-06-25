@@ -171,7 +171,7 @@ const ToolsProvider = ({children}) => {
         if(contract === 'KT1Hkg5qeNhfwpKW4fXvq7HGZB9z2EnmCCA9')
             return {
                 kind: OpKind.TRANSACTION,
-                ...v2Contract.methods.cancel_swap(swapId).toTransferParams(
+                ...v1Contract.methods.cancel_swap(swapId).toTransferParams(
                     {amount: 0, storageLimit: 150}
                 )
             };
