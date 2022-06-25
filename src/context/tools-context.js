@@ -153,7 +153,7 @@ const ToolsProvider = ({children}) => {
         return true;
     };
 
-    function getCancelTransaction(v2Contract, teiaContract, {swapId, contract}) {
+    function getCancelTransaction(v1Contract, v2Contract, teiaContract, {swapId, contract}) {
         if(contract === 'KT1PHubm9HtyQEJ4BBpMTVomq6mhbfNZ9z5w')
             return {
                 kind: OpKind.TRANSACTION,
@@ -168,18 +168,26 @@ const ToolsProvider = ({children}) => {
                     {amount: 0, storageLimit: 150}
                 )
             };
+        if(contract === 'KT1Hkg5qeNhfwpKW4fXvq7HGZB9z2EnmCCA9')
+            return {
+                kind: OpKind.TRANSACTION,
+                ...v2Contract.methods.cancel_swap(swapId).toTransferParams(
+                    {amount: 0, storageLimit: 150}
+                )
+            };
 
         throw new Error('Unhandled Contract Address');
     }
 
     const batchCancel = async(swapsToCancel) => {
         try {
+            const v1Contract = await Tezos.wallet.at(contracts.v1);
             const v2Contract = await Tezos.wallet.at(contracts.v2);
             const teiaContract = await Tezos.wallet.at(contracts.teia);
             const list = await swapsToCancel.reduce(
                 (arr, swap) => ([
                     ...arr,
-                    getCancelTransaction(v2Contract, teiaContract, swap)
+                    getCancelTransaction(v1Contract, v2Contract, teiaContract, swap)
                 ]),
                 []
             );
