@@ -116,7 +116,8 @@ const Footer = () =>
             <a href="https://twitter.com/__orderandchaos"> @__orderandchaos</a>
         </p>
         <p>Gallery: <a href="https://orderandchaos.xyz">orderandchaos.xyz</a></p>
-        <p>Hic et Nunc:
+        <p>Music: <a href="https://music.orderandchaos.xyz">music.orderandchaos.xyz</a> / <a href="https://henradio.xyz">henradio.xyz</a></p>
+        <p>Tezos Wallets:
             <br/>
             <a href="https://teia.art/tz/tz1VgpmwW66LCbskjudK54Zp96vKn2cHjpGN">tz1Vg...HjpGN</a>
             <br/>
