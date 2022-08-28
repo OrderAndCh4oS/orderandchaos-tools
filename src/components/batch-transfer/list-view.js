@@ -1,4 +1,5 @@
 import styles from './batch-transfer.module.css';
+import { HashToURL } from '../../api/ipfs';
 
 const ListView = ({
                       objkts,
@@ -16,8 +17,7 @@ const ListView = ({
                         alt={objkt.title}
                         loading="lazy"
                         className={styles.listImg}
-                        src={`https://ipfs.io/ipfs/${objkt.display_uri.slice(
-                            7)}`}
+                        src={HashToURL(objkt.display_uri)}
                     />
                 </div>
                 <div className={styles.listColumnLarge}>

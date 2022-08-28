@@ -8,7 +8,7 @@ export const priceToXtz = price => (price / 1000000)
 
 const query = gql`
     query getSwappedObjktsByWallet($address: String!) {
-        hic_et_nunc_token(where: {swaps: {creator_id: {_eq: $address}, amount_left: {_gt: 0}, status: {_eq: 0}}}, order_by: {id: desc}) {
+        token(where: {swaps: {creator_id: {_eq: $address}, amount_left: {_gt: 0}, status: {_eq: 0}}}, order_by: {id: desc}) {
             id
             creator_id
             artifact_uri
@@ -85,7 +85,7 @@ const getFloor = swaps => priceToXtz(
 const getSwappedObjktsByWallet = async(address) => {
     try {
         const response = await gqlClient.request(query, {address});
-        return response.hic_et_nunc_token.map(objkt => ({
+        return response.token.map(objkt => ({
             ...objkt,
             totalPossessed: getTotalPossessed(objkt.token_holders, address),
             userSwaps: getUserSwaps(objkt.swaps, address),

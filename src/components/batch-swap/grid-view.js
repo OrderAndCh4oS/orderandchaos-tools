@@ -1,4 +1,5 @@
 import styles from './batch-swap.module.css';
+import { HashToURL } from '../../api/ipfs';
 
 const GridView = ({objkts, toggleObjkt, selectedObjkts, handleObjktChange}) =>
     <div className={styles.grid}>
@@ -10,7 +11,7 @@ const GridView = ({objkts, toggleObjkt, selectedObjkts, handleObjktChange}) =>
                             alt={objkt.title}
                             loading="lazy"
                             className={styles.img}
-                            src={`https://ipfs.io/ipfs/${objkt.display_uri.slice(7)}`}
+                            src={HashToURL(objkt.display_uri)}
                         />
                     </div>
                     <div className={styles.objktInfo}>
