@@ -8,7 +8,7 @@ export const priceToXtz = price => (price / 1000000)
 
 const query = gql`
     query getObjktsByWallet($address: String!) {
-        hic_et_nunc_token(
+        token(
             where: {
                 token_holders: {
                     quantity: {_gt: "0"},
@@ -86,7 +86,7 @@ const getFloor = swaps => priceToXtz(swaps.reduce((floor, s) => s.price < floor 
 const getSwappableObjktsByWallet = async(address) => {
     try {
         const response = await gqlClient.request(query, {address});
-        return response.hic_et_nunc_token.map(objkt => ({
+        return response.token.map(objkt => ({
             ...objkt,
             totalPossessed: getTotalPossessed(objkt.token_holders, address),
             tradeData: objkt.trades.length ? getTradeData(objkt.trades) : null,

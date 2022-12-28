@@ -1,5 +1,6 @@
 import styles from './batch-cancel.module.css';
 import {priceToXtz} from '../../api/get-swappable-objkts-by-wallet';
+import { HashToURL } from '../../api/ipfs';
 
 const ListView = ({objkts, toggleSwap, selectedSwaps}) =>
     <div className={styles.list}>
@@ -10,8 +11,7 @@ const ListView = ({objkts, toggleSwap, selectedSwaps}) =>
                         alt={objkt.title}
                         loading="lazy"
                         className={styles.listImg}
-                        src={`https://ipfs.io/ipfs/${objkt.display_uri.slice(
-                            7)}`}
+                        src={HashToURL(objkt.display_uri)}
                     />
                 </div>
                 <div className={styles.listColumnLarge}>
